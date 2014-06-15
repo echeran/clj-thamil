@@ -1,35 +1,5 @@
 (ns clj-thamil.core)
 
-(def f "outfile.txt")
-
-(def s "வணக்கம்")
-
-
-
-(defn hello
-  []
-  (str "Hello, and " s))
-
-(println (hello))
-
-
-(defn print-hello
-  [file-name]
-  (spit file-name (hello)))
-
-(def ஒன்று 1)
-(def இரண்டு 2)
-
-(comment
-ஒன்று
-இரண்டு
-)
-
-(+ ஒன்று இரண்டு)
-
-(def v [ஒன்று இரண்டு "மூன்று"])
-
-
 (def எடு take)
 (def விடு drop)
 (def ஏறுமானம் inc)
@@ -67,17 +37,18 @@
 ;; info on macro-writing macros based on info at
 ;; http://amalloy.hubpages.com/hub/Clojure-macro-writing-macros
 
-;; (def எனில் if)
-;; (def என்றபோது when)
-;; (def இல்லெனில் if-not)
-;; (def இல்லென்ற-போது when-not)
-;; (def வரையறு def)
-;; (defmacro எனில்
-;;   [& body]
-;;   `(if ~@body))
 (defmacro translate-form
+  "Does the effective translation of a special form or macro from its old name to its new name.  In other words, generalizes the 'manual' process of defining something like:
+(defmacro எனில்
+  [& body]
+  `(if ~@body))"
   [old-name new-name]
   `(defmacro ~new-name
      [~'& body#]
      `(~'~old-name ~@body#)))
+
 (translate-form if எனில்)
+(translate-form when என்றபோது)
+(translate-form if-not இல்லெனில்)
+(translate-form when-not இல்லென்ற-போது)
+(translate-form def வரையறு)
