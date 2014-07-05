@@ -7,8 +7,8 @@
 (def இறங்குமானம் dec)
 (def இறக்கு dec)
 (def வீச்சு range)
-(def எடு-என்னும்போது take-while)
-(def விடு-என்னும்போது drop-while)
+(def எடு-என்னும்வரை take-while)
+(def விடு-என்னும்வரை drop-while)
 (def பின்னு interleave)
 (def இறுக்கு reduce)
 ;; இறுக்குவர் - reducer?
@@ -28,6 +28,17 @@
 (def கடைசியின்றி butlast)
 (def மீதி rest)
 (def அடுத்த next)
+(def வாய்மை true) ;; should we use வாய்மை, மெய்மை, or உண்மை ?  i am
+;; thinking of using வாய்மை or மெய்மை so as to leave உண்மை to continue to
+;; be used in more casual / less formal situations
+(def பொய்மை false)
+(def அச்சிடு print)
+(def வரி-அச்சிடு println)
+(def வடி filter)
+(def அகற்று remove)
+(def கொள் keep)
+(def உறிஞ்சு slurp) ;; could be சப்பு
+(def ஊற்று spit) ;; could be துப்பு
 
 (defmacro translate-fn
   [old-name new-name]
@@ -47,8 +58,9 @@
      [~'& body#]
      `(~'~old-name ~@body#)))
 
-(translate-form if எனில்)
-(translate-form when என்றபோது)
+(translate-form if எனில்) ;; எனில் is both short and not used literally
+;; in casual conversation
+(translate-form when என்னும்போது)
 (translate-form if-not இல்லெனில்)
-(translate-form when-not இல்லென்ற-போது)
+(translate-form when-not இல்லென்னும்-போது)
 (translate-form def வரையறு)
