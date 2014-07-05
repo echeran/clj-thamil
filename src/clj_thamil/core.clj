@@ -64,3 +64,12 @@
 (translate-form if-not இல்லெனில்)
 (translate-form when-not இல்லென்னும்-போது)
 (translate-form def வரையறு)
+(translate-form fn செகூ) ;; function -> செயல்கூறு
+(translate-form defn வசெகூறு) ;; def + fn = defn -> வரையறு + செ(யல்)கூ(று)
+;; = வசெகூறு
+(translate-form let வை)
+
+;; and மற்றும்
+;; or அல்லது
+;; not அன்று
+;; else என்றேல் ??  does அன்றி make sense?
