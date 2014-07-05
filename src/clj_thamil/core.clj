@@ -73,3 +73,29 @@
 ;; or அல்லது
 ;; not அன்று
 ;; else என்றேல் ??  does அன்றி make sense?
+
+(defmacro translate-forms
+  "takes a map of symbols and creates macros that do the translation of the form of the old symbol (key) to the new symbol (val)"
+  [symb-map]
+  ;; (do
+  ;;   (for [[old-form# new-form#] ~~symb-map]
+  ;;     `(defmacro ~new-form#
+  ;;           [~'& body#]
+  ;;           `(~'~old-form# ~@body#))
+  ;;      ;; `(defmacro new-form#
+  ;;      ;;    [~'& body#]
+  ;;      ;;    `(~'old-form# ~@body#))
+  ;;      ))
+
+  ;; `(for [[old-form# new-form#] ~symb-map]
+  ;;    [old-form# new-form#])
+  
+  ;; `(for [[old-form# new-form#] ~symb-map]
+  ;;    (do [old-form# new-form#]))
+  
+  `(for [[old-form# new-form#] ~symb-map]
+     `(defmacro new-form#
+        [~'& body#]
+        `(~'old-form# ~@body#)))
+
+  )
