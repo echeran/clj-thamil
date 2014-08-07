@@ -56,6 +56,14 @@
         (வரி-அச்சிடு "பொய்மை")))
 
 
+(defn test-trans-forms
+  []
+  (let [m {'and 'மற்றும்
+           'or 'அல்லது
+           'not 'அன்று
+           'else 'அன்றி}]
+    (translate-forms m)))
+
 
 (def demo-fns [demo-print-1 demo-print-2 demo-print-3
                demo-add-1 demo-add-2 demo-add-3 demo-add-4 மாதிரி-கூட்டு-5])

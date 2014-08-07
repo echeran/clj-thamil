@@ -74,28 +74,17 @@
 ;; not அன்று
 ;; else என்றேல் ??  does அன்றி make sense?
 
+(defmacro translate-form-symbol
+  "Does the effective translation of a special form or macro from its old name to its new name, with the names given as symbols"
+  [old-name new-name]
+  `(defmacro ~(eval new-name)
+     [~'& body#]
+     `(~'~(eval old-name) ~@body#)))
+
 (defmacro translate-forms
   "takes a map of symbols and creates macros that do the translation of the form of the old symbol (key) to the new symbol (val)"
-  [symb-map]
-  ;; (do
-  ;;   (for [[old-form# new-form#] ~~symb-map]
-  ;;     `(defmacro ~new-form#
-  ;;           [~'& body#]
-  ;;           `(~'~old-form# ~@body#))
-  ;;      ;; `(defmacro new-form#
-  ;;      ;;    [~'& body#]
-  ;;      ;;    `(~'old-form# ~@body#))
-  ;;      ))
-
-  ;; `(for [[old-form# new-form#] ~symb-map]
-  ;;    [old-form# new-form#])
-  
-  ;; `(for [[old-form# new-form#] ~symb-map]
-  ;;    (do [old-form# new-form#]))
-  
-  `(for [[old-form# new-form#] ~symb-map]
-     `(defmacro new-form#
-        [~'& body#]
-        `(~'old-form# ~@body#)))
-
-  )
+  [symb-map] 
+  `(do
+     ~@
+     (for [[old-form# new-form#] (eval symb-map)]
+        `(translate-form-symbol '~old-form# '~new-form#))))
