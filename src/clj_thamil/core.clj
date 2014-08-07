@@ -58,24 +58,24 @@
      [~'& body#]
      `(~'~old-name ~@body#)))
 
-(translate-form if எனில்) ;; எனில் is both short and not used literally
-;; in casual conversation
-(translate-form when என்னும்போது)
-(translate-form if-not இல்லெனில்)
-(translate-form when-not இல்லென்னும்-போது)
-(translate-form def வரையறு)
-(translate-form fn செகூ) ;; function -> செயல்கூறு
-(translate-form defn வசெகூறு) ;; def + fn = defn -> வரையறு + செ(யல்)கூ(று)
-;; = வசெகூறு
-(translate-form let வை)
+;; not sure if/how to shorten செயல்கூறு, வரையறு-செயல்கூறு, வைத்துக்கொள்
 
-;; and மற்றும்
-;; or அல்லது
-;; not அன்று
-;; else என்றேல் ??  does அன்றி make sense?
+(def forms-map {'if 'எனில்
+                'when 'என்னும்போது
+                'if-not 'இல்லெனில்
+                'when-not 'இல்லென்னும்-போது
+                'def 'வரையறு
+                'fn 'செயல்கூறு
+                'defn 'வரையறு-செயல்கூறு
+                'let 'வைத்துக்கொள்
+                'and 'மற்றும்
+                'or 'அல்லது
+                'not 'அன்று
+                ;; else என்றேல் ??  does அன்றி make sense?
+                })
 
 (defmacro translate-form-symbol
-  "Does the effective translation of a special form or macro from its old name to its new name, with the names given as symbols"
+  "Does the effective translation of a special form or macro from its old name to its new name, with the names given as symbols. Helper macro for translate-forms macro"
   [old-name new-name]
   `(defmacro ~(eval new-name)
      [~'& body#]
@@ -88,3 +88,6 @@
      ~@
      (for [[old-form# new-form#] (eval symb-map)]
         `(translate-form-symbol '~old-form# '~new-form#))))
+
+;; do the actual "translation" for macros and special forms
+(translate-forms forms-map)
