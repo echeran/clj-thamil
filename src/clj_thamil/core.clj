@@ -1,49 +1,20 @@
 (ns clj-thamil.core)
 
-(def எடு take)
-(def விடு drop)
-(def ஏறுமானம் inc)
-(def ஏற்று inc)
-(def இறங்குமானம் dec)
-(def இறக்கு dec)
-(def வீச்சு range)
-(def எடு-என்னும்வரை take-while)
-(def விடு-என்னும்வரை drop-while)
-(def பின்னு interleave)
-(def இறுக்கு reduce)
-;; இறுக்குவர் - reducer?
-(def விவரி map)
-;; (def புலவெண்-விவரம் hash-map)
-(def புலவெண்-விவரணையாக்கம் hash-map)
-;; (def காவி vector) ?
-;; (def நெறியம் vector) ?
-(def பட்டியல் list)
-(def அமைவு set)
-(def புலவெண்-அமைவு hash-set)
-(def அணு atom)
-(def முகவர் agent)
-(def முதல் first)
-(def இரண்டாம் second)
-(def கடைசி last)
-(def கடைசியின்றி butlast)
-(def மீதி rest)
-(def அடுத்த next)
-(def வாய்மை true) ;; should we use வாய்மை, மெய்மை, or உண்மை ?  i am
-;; thinking of using வாய்மை or மெய்மை so as to leave உண்மை to continue to
-;; be used in more casual / less formal situations
-(def பொய்மை false)
-(def அச்சிடு print)
-(def வரி-அச்சிடு println)
-(def வடி filter)
-(def அகற்று remove)
-(def கொள் keep)
-(def உறிஞ்சு slurp) ;; could be சப்பு
-(def ஊற்று spit) ;; could be துப்பு
 
 (defmacro translate-fn
   [old-name new-name]
   `(def ~old-name ~new-name))
 
+(defmacro translate-fn-symbol
+  [old-name new-name]
+  `(def ~(eval new-name) ~(eval old-name)))
+
+(defmacro translate-fns
+  [symb-map]
+  `(do
+     ~@
+     (for [[old-form# new-form#] (eval symb-map)]
+       `(translate-fn-symbol '~old-form# '~new-form#))))
 
 ;; info on macro-writing macros based on info at
 ;; http://amalloy.hubpages.com/hub/Clojure-macro-writing-macros
@@ -88,6 +59,50 @@
      ~@
      (for [[old-form# new-form#] (eval symb-map)]
         `(translate-form-symbol '~old-form# '~new-form#))))
+
+
+(def fns-map {
+              'take 'எடு
+              'drop 'விடு
+              ;; 'inc 'ஏறுமானம்
+              'inc 'ஏற்று
+              ;; 'dec 'இறங்குமானம்
+              'dec 'இறக்கு
+              'range 'வீச்சு
+              'take-while 'எடு-என்னும்வரை
+              'drop-while 'விடு-என்னும்வரை
+              'interleave 'பின்னு
+              'reduce 'இறுக்கு
+              ;; 'reducer 'இறுக்குவர் ;; ??
+              'map 'விவரி
+              'hash-map 'புலவெண்-விவரணையாக்கம் 
+              ;; 'vector 'காவி ;; ??
+              ;; 'vector 'நெறியம் ;; ??
+              'list 'பட்டியல்
+              'set 'அமைவு
+              'hash-set 'புலவெண்-அமைவு
+              'atom 'அணு
+              'agent 'முகவர்
+              'first 'முதல்
+              'second 'இரண்டாம்
+              'last 'கடைசி
+              'butlast 'கடைசியின்றி
+              'rest 'மீதி
+              'next 'அடுத்த'
+              'true 'வாய்மை ;; should we use வாய்மை, மெய்மை, or உண்மை ?  i am
+              ;; thinking of using வாய்மை or மெய்மை so as to leave உண்மை to continue to
+              ;; be used in more casual / less formal situations
+              'false 'பொய்மை
+              'print 'அச்சிடு
+              'println 'வரி-அச்சிடு
+              'filter 'வடி
+              'remove 'அகற்று
+              'keep 'கொள்
+              'slurp 'உறிஞ்சு;; could be சப்பு
+              'spit 'ஊற்று ;; could be துப்பு
+              })
+;; do the actual "translation" for bindings, fns, and any other value
+(translate-fns fns-map)
 
 ;; do the actual "translation" for macros and special forms
 (translate-forms forms-map)
