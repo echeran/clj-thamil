@@ -31,20 +31,6 @@
 
 ;; not sure if/how to shorten செயல்கூறு, வரையறு-செயல்கூறு, வைத்துக்கொள்
 
-(def forms-map {'if 'எனில்
-                'when 'என்னும்போது
-                'if-not 'இல்லெனில்
-                'when-not 'இல்லென்னும்-போது
-                'def 'வரையறு
-                'fn 'செயல்கூறு
-                'defn 'வரையறு-செயல்கூறு
-                'let 'வைத்துக்கொள்
-                'and 'மற்றும்
-                'or 'அல்லது
-                'not 'அன்று
-                ;; else என்றேல் ??  does அன்றி make sense?
-                })
-
 (defmacro translate-form-symbol
   "Does the effective translation of a special form or macro from its old name to its new name, with the names given as symbols. Helper macro for translate-forms macro"
   [old-name new-name]
@@ -101,6 +87,22 @@
               'slurp 'உறிஞ்சு;; could be சப்பு
               'spit 'ஊற்று ;; could be துப்பு
               })
+
+(def forms-map {
+                'if 'எனில்
+                'when 'என்னும்போது
+                'if-not 'இல்லெனில்
+                'when-not 'இல்லென்னும்-போது
+                'def 'வரையறு
+                'fn 'செயல்கூறு
+                'defn 'வரையறு-செயல்கூறு
+                'let 'வைத்துக்கொள்
+                'and 'மற்றும்
+                'or 'அல்லது
+                'not 'அன்று
+                ;; else என்றேல் ??  does அன்றி make sense?
+                })
+
 ;; do the actual "translation" for bindings, fns, and any other value
 (translate-fns fns-map)
 
