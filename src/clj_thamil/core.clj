@@ -86,6 +86,11 @@
               'keep 'கொள்
               'slurp 'உறிஞ்சு;; could be சப்பு
               'spit 'ஊற்று ;; could be துப்பு
+              'seq 'வரிசை
+              'dorun 'செய்யோட்டம்
+              'doall 'செய்யெல்லாம்
+              'str 'சரம்
+              'interpose 'பிண்ணு
               })
 
 (def forms-map {
@@ -96,11 +101,15 @@
                 'def 'வரையறு
                 'fn 'செயல்கூறு
                 'defn 'வரையறு-செயல்கூறு
-                'let 'வைத்துக்கொள்
+                'let 'வைத்துக்கொள் ;; maybe just கொள்
                 'and 'மற்றும்
                 'or 'அல்லது
                 'not 'அன்று
                 ;; else என்றேல் ??  does அன்றி make sense?
+                'loop 'சுற்று
+                'doseq 'செய்வரிசை
+                ;; 'for 'ஒவ்வொன்றுக்கும்
+                'for 'ஒன்றொன்றுக்கு
                 })
 
 ;; do the actual "translation" for bindings, fns, and any other value
