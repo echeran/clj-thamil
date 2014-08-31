@@ -1,4 +1,5 @@
-(ns clj-thamil.format)
+(ns clj-thamil.format
+  (:use clj-thamil.core))
 
 (def letters [["ஃ" "அ" "ஆ" "இ" "ஈ" "உ" "ஊ" "எ" "ஏ" "ஐ" "ஒ" "ஓ" "ஔ"]
               ["க்" "க" "கா" "கி" "கீ" "கு" "கூ" "கெ" "கே" "கை" "கொ" "கோ" "கௌ"]
@@ -26,29 +27,20 @@
 
 (def consonants (rest letters))
 
-(defn trie-update-subtree
-  "given the subtree of a trie as a nested map, and the (sub-)sequence to be inserted in the subtree, return the updated subtree"
-  [tm s]
-  (loop [idx 0]
-    (let [[pre post] (split-at idx s)]
-      (if-let [terminal-val (get-in tm pre)]
-        (if (map? terminal-val)
-          (assoc-in tm s (assoc terminal-val nil nil))
-          (-> tm
-              (dissoc-in tm s)
-              (assoc-in tm (rest s) {(last s) terminal-val,
-                                     nil nil})))))))
-
 (defn trie-add-seq
   "take a trie (represented as a nested map) and add a sequence"
   [trie-map s] 
   (loop [idx (count s)
          tm trie-map]
     (when-not (neg? idx)
-      (let [[pre post] (split-at idx s)] 
-        (if (get-in tm pre)
-          (get-in tm pre)
-          (recur (dec idx) tm))))))
+      (if (zero? idx)
+        (if (= 1 (count s))
+          (assoc-in tm s {nil nil})
+          (update-in tm (vec s) assoc-in [nil] nil))
+        (let [[pre post] (split-at idx s)] 
+          (if (get-in tm pre)
+            (update-in tm pre assoc-in (concat post [nil]) nil)
+            (recur (dec idx) tm)))))))
 
 (defn make-trie
   "take a sequence (may be nested) and creates a trie, represented as a nested map"
