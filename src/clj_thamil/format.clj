@@ -27,7 +27,7 @@
 
 (def consonants (rest letters))
 
-(defn trie-add-seq
+(defn- trie-add-seq
   "take a trie (represented as a nested map) and add a sequence"
   [trie-map s] 
   (loop [idx (count s)
@@ -42,8 +42,34 @@
             (update-in tm pre assoc-in (concat post [nil]) nil)
             (recur (dec idx) tm)))))))
 
-(defn make-trie
-  "take a sequence (may be nested) and creates a trie, represented as a nested map"
+(defn- make-trie
+  "take a sequence (may be nested) of input sequences and creates a trie, represented as a nested map"
   [sequence]
   (let [s (flatten sequence)]
     (reduce trie-add-seq {} s)))
+
+(defn- trie-find
+  "take a trie and a sequence and look up the sequence in the trie"
+  [trie sq]
+  (get-in trie sq))
+
+(def ^{:private true
+       :doc "a trie that converts a string of characters/codepoints into strings representing the individual letters in தமிழ்"}
+  codepoint-trie (make-trie letters))
+
+(defn str->letters
+  "take a string and split it into its constitutent தமிழ் + non-complex letters (non-complex = all left-to-right, 1-to-1 codepoint-to-glyph encodings -- this includes all Western languages)"
+  [s] 
+  (loop [idx 0
+         new-chars []
+         letters []]
+    (if (= idx (count s))
+      (if (empty? new-chars)
+        letters
+        (conj letters (apply str new-chars)))
+      (let [next-char (.charAt s idx)]
+        (if (nil? (trie-find codepoint-trie (apply str (conj new-chars next-char))))
+          (if (empty? new-chars)
+            (recur (inc idx) (conj new-chars next-char) letters)
+            (recur (inc idx) [next-char] (conj letters (apply str new-chars))))
+          (recur (inc idx) (conj new-chars next-char) letters))))))
