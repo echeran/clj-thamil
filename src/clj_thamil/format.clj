@@ -73,3 +73,9 @@
             (recur (inc idx) (conj new-chars next-char) letters)
             (recur (inc idx) [next-char] (conj letters (apply str new-chars))))
           (recur (inc idx) (conj new-chars next-char) letters))))))
+
+(defn word-under-cursor
+  "given a string and an index number that the cursor is on or before, return the word that the cursor is in the middle of. if cursor is before or after a word, or at the beginning or end of string, return a falsey value (ex: nil).  accepts idx being at end of string (idx == (count s))"
+  [s idx]
+  (assert (> s 0), "cursor postiion out of range")
+  )
