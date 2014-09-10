@@ -5,6 +5,51 @@
 
 (def words ["பந்து" "பந்தி" "பத்து" "பந்துகள்" "பந்தயம்" "பந்தாடு" "பந்தல்"])
 
+(deftest trie-test
+  (let [first-word (first words)
+        first-two-words (take 2 words)]
+    (testing "creating a trie"
+      (testing "creating a trie from a sequence of words (default val is attached to terminus)"
+        (testing "boundary case"
+          (is (= {} (make-trie []))))
+        (is (= {\ப {\ந {\u0BCD {\த {\u0BC1 {nil nil}}}}}} (make-trie [first-word])))
+        (is (= (make-trie [first-word]) (make-trie (take 1 words))))
+        (testing "words that share some prefix"
+          (is (= {\ப {\ந {\u0BCD {\த {\u0BC1 {nil nil} \u0BBF {nil nil}}}}}} (make-trie first-two-words))))
+        (testing "words that have no shared prefix"
+          (is (= {\ப {\ந {\u0BCD {\த {\u0BC1 {nil nil}}}}} \வ {\u0BC6 {\ற {\u0BCD {\ற {\u0BBF {nil nil}}}}}}} (make-trie [first-word "வெற்றி"])))))
+      (testing "creating a trie from a map of word->terminus-attached-val"
+        (testing "boundary case"
+          (is (= {} (make-trie {}))))
+        (is (= {\ப {\ந {\u0BCD {\த {\u0BC1 {nil 1}}}}}} (make-trie {first-word 1})))
+        (is (= {\ப {\ந {\u0BCD {\த {\u0BC1 {nil 0
+                                            \க {\ள {\u0BCD {nil 3}}}}
+                                    \u0BBF {nil 1}
+                                    \ய {\ம {\u0BCD {nil 4}}}
+                                    \ல {\u0BCD {nil 6}}
+                                    \u0BBE {\ட {\u0BC1 {nil 5}}}}}}
+                    \த {\u0BCD {\த {\u0BC1 {nil 2}}}}}}
+               (make-trie (zipmap words (range)))))))
+    (testing "trie lookup fns"
+      (testing "nil as valued attached to terminus of input sequences"
+        (is (= true (in-trie? {\ப {\ந {\u0BCD {\த {\u0BC1 {\க {\ள {\u0BCD {nil nil}}}}}}}}} "பந்துகள்")))
+        (is (= false (in-trie? {\ப {\ந {\u0BCD {\த {\u0BC1 {\க {\ள {\u0BCD {nil nil}}}}}}}}} "ப")))
+        (is (= false (in-trie? {\ப {\ந {\u0BCD {\த {\u0BC1 {\க {\ள {\u0BCD {nil nil}}}}}}}}} "பந்துக")))
+        (is (= false (in-trie? {\ப {\ந {\u0BCD {\த {\u0BC1 {\க {\ள {\u0BCD {nil nil}}}}}}}}} "பந்து")))
+        (is (= false (in-trie? {\ப {\ந {\u0BCD {\த {\u0BC1 {nil nil}}}}}} "பந்துகள்")))
+        (is (= false (in-trie? {\ப {\ந {\u0BCD {\த {\u0BC1 {nil nil}}}}}} "ப")))
+        (is (= false (in-trie? {\ப {\ந {\u0BCD {\த {\u0BC1 {nil nil}}}}}} "பந்துக")))
+        (is (= true (in-trie? {\ப {\ந {\u0BCD {\த {\u0BC1 {nil nil}}}}}} "பந்து")))
+        (is (= false (nil? (trie-prefix-subtree {\ப {\ந {\u0BCD {\த {\u0BC1 {nil nil}}}}}} "பந்து"))))
+        (is (= false (nil? (trie-prefix-subtree {\ப {\ந {\u0BCD {\த {\u0BC1 {nil nil}}}}}} "ப"))))
+        (is (= true (nil? (trie-prefix-subtree {\ப {\ந {\u0BCD {\த {\u0BC1 {nil nil}}}}}} "பந்துகள்"))))
+        (is (= true (nil? (trie-prefix-subtree {\ப {\ந {\u0BCD {\த {\u0BC1 {nil nil}}}}}} "கோடு"))))) 
+      (testing "non-nil values attached to terminus of input sequences"
+        (is (= true (in-trie? {\ப {\ந {\u0BCD {\த {\u0BC1 {nil 1}}}}}} "பந்து")))
+        (is (= false (in-trie? {\ப {\ந {\u0BCD {\த {\u0BC1 {nil 3.14159}}}}}} "ப")))
+        (is (= false (nil? (trie-prefix-subtree {\ப {\ந {\u0BCD {\த {\u0BC1 {nil \a}}}}}} "பந்து"))))
+        (is (= false (nil? (trie-prefix-subtree {\ப {\ந {\u0BCD {\த {\u0BC1 {nil true}}}}}} "ப"))))))))
+
 (deftest word-letter-test
   (testing "splitting strings of தமிழ் characters into constituent தமிழ் characters"
     (is (= [] (str->letters "")))
@@ -17,7 +62,7 @@
     (is (= ["த" "மி" "ழ்" " "] (str->letters "தமிழ் ")))
     (is (= ["s" "o" "f" "t" "w" "a" "r" "e" "=" "மெ" "ன்" "பொ" "ரு" "ள்" "," "." "." "."] (str->letters "software=மென்பொருள்,..."))))
   (testing "letter ordering"
-    (testing "boundary cases" 
+    (testing "boundary cases"
       (is (= true (letter-before? nil nil)))
       (is (= true (letter-before? nil "")))
       (is (= false (letter-before? "" nil)))
@@ -74,3 +119,41 @@
       (is (= true (word-before? "கொசு" "நுளம்பு")))
       (is (= true (word-before? "ஈ" "கொசு")))
       (is (= false (word-before? "கொசு" "ஈ"))))))
+
+(deftest word-char-traits-test 
+  (testing "word and char traits"
+    (testing "char traits"
+      (let [ws-chars [\space \tab \newline]
+            wordy-chars [\a \Z \0 ]
+            punct-chars [\- \* \^ \$ \+ \. \_ \; ]
+            தமிழ்-எழுத்து-unicode-chars [\அ \ஆ \இ \ஔ \ஃ \க \ங \ன]
+            தமிழ்-எழுத்து-துணை-குறி-unicode-chars [\u0BCD \u0BBE \u0BBF \u0BC0 \u0BC1 \u0BC2 \u0BC6 \u0BC7 \u0BC8 \u0BCA \u0BCB \u0BCC]]
+        (is (= true (every? true? (map whitespace? ws-chars))))
+        (is (= true (every? true? (map wordy-char? wordy-chars))))
+        (is (= true (every? true? (map wordy-char? தமிழ்-எழுத்து-unicode-chars))))
+        (is (= true (every? true? (map wordy-char? தமிழ்-எழுத்து-துணை-குறி-unicode-chars))))
+        (is (= true (every? true? (map wordy-char? தமிழ்-எழுத்து-துணை-குறி-unicode-chars))))
+        (is (= true (every? false? (map wordy-char? punct-chars))))))
+    (testing "word boundaries"
+      (let [s1 "aldsk சிக்கல் sdfsdf234234lsdflksjdf Zürich"
+            s2 "  alsfjs"
+            s3 ""
+            s4 nil]
+        (is (= ["aldsk" "சிக்கல்" "sdfsdf234234lsdflksjdf" "Zürich"] (wordy-seq s1)))
+        (is (= ["alsfjs"] (wordy-seq s2)))
+        (is (= [] (wordy-seq s3)))
+        (is (= nil (wordy-seq s4)))))))
+
+(deftest cursor-pos-test
+  (let [s1 "aldsk சிக்கல் sdfsdf234234lsdflksjdf Zürich"
+        s2 "  alsfjs"]
+    (testing "cursor position"
+      (is (= "aldsk" (wordy-chunk-under s1 0)))
+      (is (= "aldsk" (wordy-chunk-under s1 1)))
+      (is (= "aldsk" (wordy-chunk-under s1 5)))
+      (is (= "சிக்கல்" (wordy-chunk-under s1 6)))
+      (is (= "Zürich" (wordy-chunk-under s1 (count s1))))
+      (is (= "Zürich" (wordy-chunk-under s1 (- (count s1) (count "Zürich")))))
+      (is (nil? (wordy-chunk-under s2 0)))
+      (is (nil? (wordy-chunk-under s2 1)))
+      (is (= "alsfjs" (wordy-chunk-under s2 2))))))
