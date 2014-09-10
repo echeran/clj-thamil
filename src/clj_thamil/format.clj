@@ -91,12 +91,16 @@
                (recur (inc idx) [next-char] (conj letters (apply str new-chars))))
              (recur (inc idx) (conj new-chars next-char) letters)))))))
 
+;;;;;;;;;;;;;;
+;; sorting fns
+;;;;;;;;;;;;;; 
+
 (def ^{:private true
        :doc "a flattened seq of all தமிழ் letters in lexicographical (alphabetical) order -- put anohter way, in the order of அகர முதல் னரக இறுவாய் as the 2500 yr old grammatical compendium தொல்காப்பியம் states in its outset"}
-  sort-order (flatten (concat vowels consonants)))
+  letter-seq (flatten (concat vowels consonants)))
 
 (def ^{:doc "a map where the key is a தமிழ் letter, and the value is a number indicating its relative position in sort order"}
-  sort-map (zipmap sort-order (range)))
+  sort-map (zipmap letter-seq (range)))
 
 (defn letter-before?
   "a 2-arg predicate indicating whether the first string comes before the second string, but assuming that each string will only represent individual letters"
