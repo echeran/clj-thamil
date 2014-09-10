@@ -74,20 +74,22 @@
 
 (defn str->letters
   "take a string and split it into its constitutent தமிழ் + non-complex letters (non-complex = all left-to-right, 1-to-1 codepoint-to-glyph encodings -- this includes all Western languages)"
-  [s] 
-  (loop [idx 0
-         new-chars []
-         letters []]
-    (if (= idx (count s))
-      (if (empty? new-chars)
-        letters
-        (conj letters (apply str new-chars)))
-      (let [next-char (.charAt s idx)]
-        (if (nil? (trie-find codepoint-trie (apply str (conj new-chars next-char))))
-          (if (empty? new-chars)
-            (recur (inc idx) (conj new-chars next-char) letters)
-            (recur (inc idx) [next-char] (conj letters (apply str new-chars))))
-          (recur (inc idx) (conj new-chars next-char) letters))))))
+  ([s]
+     (str->letters codepoint-trie s))
+  ([trie s]
+     (loop [idx 0
+            new-chars []
+            letters []]
+       (if (= idx (count s))
+         (if (empty? new-chars)
+           letters
+           (conj letters (apply str new-chars)))
+         (let [next-char (.charAt s idx)]
+           (if (nil? (trie-prefix-subtree trie (apply str (conj new-chars next-char))))
+             (if (empty? new-chars)
+               (recur (inc idx) (conj new-chars next-char) letters)
+               (recur (inc idx) [next-char] (conj letters (apply str new-chars))))
+             (recur (inc idx) (conj new-chars next-char) letters)))))))
 
 (def ^{:private true
        :doc "a flattened seq of all தமிழ் letters in lexicographical (alphabetical) order -- put anohter way, in the order of அகர முதல் னரக இறுவாய் as the 2500 yr old grammatical compendium தொல்காப்பியம் states in its outset"}
