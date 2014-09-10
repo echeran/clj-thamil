@@ -27,31 +27,46 @@
 
 (def consonants (rest letters))
 
+;;;;;;;;;;;
+;; trie fns
+;;;;;;;;;;;
+
 (defn- trie-add-seq
-  "take a trie (represented as a nested map) and add a sequence"
-  [trie-map s] 
-  (loop [idx (count s)
-         tm trie-map]
-    (when-not (neg? idx)
-      (if (zero? idx)
-        (if (= 1 (count s))
-          (assoc-in tm s {nil nil})
-          (update-in tm (vec s) assoc-in [nil] nil))
-        (let [[pre post] (split-at idx s)] 
-          (if (get-in tm pre)
-            (update-in tm pre assoc-in (concat post [nil]) nil)
-            (recur (dec idx) tm)))))))
+  "take a trie (represented as a nested map) and add a sequence, with an optional value attached to its terminus"
+  ([trie-map s]
+     (trie-add-seq trie-map s nil))
+  ([trie-map s term-val] 
+     (loop [idx (count s)
+            tm trie-map]
+       (when-not (neg? idx)
+         (if (zero? idx)
+           (if (= 1 (count s))
+             (assoc-in tm s {nil term-val})
+             (update-in tm (vec s) assoc-in [nil] term-val))
+           (let [[pre post] (split-at idx s)] 
+             (if (get-in tm pre)
+               (update-in tm pre assoc-in (concat post [nil]) term-val)
+               (recur (dec idx) tm))))))))
 
-(defn- make-trie
-  "take a sequence (may be nested) of input sequences and creates a trie, represented as a nested map"
+(defn make-trie
+  "take a sequence (may be nested) of input sequences, or else takes a map (single-level) where keys are sequences and vals are attached to the terminus in trie. fn creates a trie, represented as a nested map."
   [sequence]
-  (let [s (flatten sequence)]
-    (reduce trie-add-seq {} s)))
+  (if (map? sequence)
+    (reduce (partial apply trie-add-seq) {} sequence)
+    (let [s (flatten sequence)]
+      (reduce trie-add-seq {} s))))
 
-(defn- trie-find
-  "take a trie and a sequence and look up the sequence in the trie"
+(defn trie-prefix-subtree
+  "take a trie and a sequence, look up the sequence in the trie, and return the subtree"
   [trie sq]
   (get-in trie sq))
+
+(defn in-trie?
+  "return whether the sequence exists in the trie"
+  [trie sq]
+  (-> (trie-prefix-subtree trie sq)
+      (find nil)
+      boolean))
 
 (def ^{:private true
        :doc "a trie that converts a string of characters/codepoints into strings representing the individual letters in தமிழ்"}
