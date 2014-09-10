@@ -128,15 +128,52 @@
        :doc "a comparator for lexicographical comparisons of arbitrary strings (consisting of தமிழ் letters and letters from 1-to-1 encodings)"}
   word-comp (comparator word-before?))
 
-(defn word-under-cursor
-  "given a string and an index number that the cursor is on or before, return the word that the cursor is in the middle of. if cursor is before or after a word, or at the beginning or end of string, return a falsey value (ex: nil).  accepts idx being at end of string (idx == (count s))"
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; word & character traits fns
+;; position fns
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn whitespace?
+  "returns whether a Java Character a.k.a. Unicode codepoint is whitespace or not (according to Java's understanding of Unicode)"
+  [ch]
+  (when ch
+    (Character/isWhitespace ch)))
+
+(defn wordy-char?
+  "take a Java Character a.k.a. Unicode codepoint and return whether it represents a character that might go into a word or identifier.  In other words, it is for Unicode like what \\w has representing in regular expressions for ASCII characters -- which is alpha-numeric characters"
+  [ch]
+  (when ch
+    (and
+     (not (get #{\$ \_} ch))
+     (Character/isJavaIdentifierPart ch))))
+
+(defn wordy-seq
+  "take a string and produce a seq of the Unicode-aware version of the \\w+ regex pattern - basically, split input string into all chunks of non-whitepsace.  Originally, I called this fn word-seq, but that is not true for all languages and/or throughout time where there was no spearation between words (ex: Thai, Chinese, Japanese, Latin manuscripts, ancient Thamil stone inscriptions, etc.)"
+  [s]
+  (when s
+    (let [chunks (partition-by wordy-char? s)
+          word-chunks (filter (comp wordy-char? first) chunks)
+          words (map (partial apply str) word-chunks)]
+      words)))
+
+(defn wordy-chunk-under
+  "given a string and an index number that the cursor is on or before, return the wordy chunk that the cursor is in the middle of. if cursor is before or after a word, or at the beginning or end of string, return a falsey value (ex: nil).  accepts idx being at end of string (idx == (count s))."
   [s idx]
   (assert (<= 0 idx) (str "cursor postiion out of range [idx =" idx "]"))
   (assert (<= idx (count s)) (str "cursor postiion out of range [idx =" idx "], [str len =" (count s) "]"))
   ;; TODO: handle case where cursor is at end of string
-  (let [[before after] (split-at idx s)]
+  (let [[before after] [(subs s 0 idx) (subs s idx)]
+        partitions-before (partition-by wordy-char? before)
+        partitions-after (partition-by wordy-char? after)
+        wordy-chunks-before (wordy-seq before)
+        wordy-chunks-after (wordy-seq after)
+        chunk-seq-wordy? (comp wordy-char? first)
+        prev-chunk (last wordy-chunks-before)
+        next-chunk (first wordy-chunks-after)
+        prev-chunk-wordiness (chunk-seq-wordy? (last partitions-before))
+        next-chunk-wordiness (chunk-seq-wordy? (first partitions-after))]
     (cond
-     (and (re-seq #".*\b\W*" before) (re-seq #"\w+.*" after))
-     (first (re-seq #"(\w+).*" after))
-     true
-     nil)))
+     (and prev-chunk-wordiness next-chunk-wordiness) (str prev-chunk next-chunk)
+     prev-chunk-wordiness prev-chunk
+     next-chunk-wordiness next-chunk
+     :else nil)))
