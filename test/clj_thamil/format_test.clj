@@ -146,14 +146,33 @@
 
 (deftest cursor-pos-test
   (let [s1 "aldsk சிக்கல் sdfsdf234234lsdflksjdf Zürich"
-        s2 "  alsfjs"]
+        s2 "  alsfjs"
+        s3 "a    b"]
     (testing "cursor position"
-      (is (= "aldsk" (wordy-chunk-under s1 0)))
-      (is (= "aldsk" (wordy-chunk-under s1 1)))
-      (is (= "aldsk" (wordy-chunk-under s1 5)))
-      (is (= "சிக்கல்" (wordy-chunk-under s1 6)))
-      (is (= "Zürich" (wordy-chunk-under s1 (count s1))))
-      (is (= "Zürich" (wordy-chunk-under s1 (- (count s1) (count "Zürich")))))
-      (is (nil? (wordy-chunk-under s2 0)))
-      (is (nil? (wordy-chunk-under s2 1)))
-      (is (= "alsfjs" (wordy-chunk-under s2 2))))))
+      (testing "wordy chunk under cursor"
+        (is (= "aldsk" (wordy-chunk-under s1 0)))
+        (is (= "aldsk" (wordy-chunk-under s1 1)))
+        (is (= "aldsk" (wordy-chunk-under s1 5)))
+        (is (= "சிக்கல்" (wordy-chunk-under s1 6)))
+        (is (= "Zürich" (wordy-chunk-under s1 (count s1))))
+        (is (= "Zürich" (wordy-chunk-under s1 (- (count s1) (count "Zürich")))))
+        (is (nil? (wordy-chunk-under s2 0)))
+        (is (nil? (wordy-chunk-under s2 1)))
+        (is (= "alsfjs" (wordy-chunk-under s2 2)))
+        (is (= "a" (wordy-chunk-under s3 0)))
+        (is (= "a" (wordy-chunk-under s3 1)))
+        (is (nil? (wordy-chunk-under s3 2))))
+      (testing "cursor position within wordy chunk"
+        (is (= ["aldsk" 0] (wordy-chunk-and-cursor-pos s1 0)))
+        (is (= ["aldsk" 1] (wordy-chunk-and-cursor-pos s1 1)))
+        (is (= ["aldsk" 5] (wordy-chunk-and-cursor-pos s1 5)))
+        (is (= ["சிக்கல்" 0] (wordy-chunk-and-cursor-pos s1 6)))
+        (is (= ["Zürich" 6] (wordy-chunk-and-cursor-pos s1 (count s1))))
+        (is (= ["Zürich" 0] (wordy-chunk-and-cursor-pos s1 (- (count s1) (count "Zürich")))))
+        (is (nil? (wordy-chunk-and-cursor-pos s2 0)))
+        (is (nil? (wordy-chunk-and-cursor-pos s2 1)))
+        (is (= ["alsfjs" 0] (wordy-chunk-and-cursor-pos s2 2)))
+        (is (= ["a" 0] (wordy-chunk-and-cursor-pos s3 0)))
+        (is (= ["a" 1] (wordy-chunk-and-cursor-pos s3 1)))
+        (is (nil? (wordy-chunk-and-cursor-pos s3 2)))
+        ))))

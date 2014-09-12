@@ -156,8 +156,8 @@
           words (map (partial apply str) word-chunks)]
       words)))
 
-(defn wordy-chunk-under
-  "given a string and an index number that the cursor is on or before, return the wordy chunk that the cursor is in the middle of. if cursor is before or after a word, or at the beginning or end of string, return a falsey value (ex: nil).  accepts idx being at end of string (idx == (count s))."
+(defn wordy-chunk-and-cursor-pos
+  "given a string and an index number that the cursor is on or before, return the wordy chunk that the cursor is in the middle of, and the cursor pos relative to the chunk. if cursor is before or after a word, or at the beginning or end of string, return a falsey value (ex: nil).  accepts idx being at end of string (idx == (count s))."
   [s idx]
   (assert (<= 0 idx) (str "cursor postiion out of range [idx =" idx "]"))
   (assert (<= idx (count s)) (str "cursor postiion out of range [idx =" idx "], [str len =" (count s) "]"))
@@ -169,11 +169,19 @@
         wordy-chunks-after (wordy-seq after)
         chunk-seq-wordy? (comp wordy-char? first)
         prev-chunk (last wordy-chunks-before)
-        next-chunk (first wordy-chunks-after)
+        next-chunk (first wordy-chunks-after) 
         prev-chunk-wordiness (chunk-seq-wordy? (last partitions-before))
-        next-chunk-wordiness (chunk-seq-wordy? (first partitions-after))]
+        next-chunk-wordiness (chunk-seq-wordy? (first partitions-after))
+        prev-chunk-idx (if prev-chunk (.indexOf before prev-chunk) -1)
+        next-chunk-idx (if next-chunk (.indexOf after next-chunk) -1)
+        prev-chunk-flush (= idx (+ prev-chunk-idx (count prev-chunk)))
+        next-chunk-flush (zero? next-chunk-idx)]
     (cond
-     (and prev-chunk-wordiness next-chunk-wordiness) (str prev-chunk next-chunk)
-     prev-chunk-wordiness prev-chunk
-     next-chunk-wordiness next-chunk
+     (and prev-chunk-wordiness next-chunk-wordiness prev-chunk-flush next-chunk-flush) [(str prev-chunk next-chunk) (- idx prev-chunk-idx)]
+     (and prev-chunk-wordiness prev-chunk-flush) [prev-chunk (- idx prev-chunk-idx)]
+     (and  next-chunk-wordiness next-chunk-flush) [next-chunk 0]
      :else nil)))
+
+(def wordy-chunk-under (comp first wordy-chunk-and-cursor-pos))
+
+
