@@ -72,11 +72,27 @@
        :doc "a trie that converts a string of characters/codepoints into strings representing the individual letters in தமிழ்"}
   codepoint-trie (make-trie letters))
 
+(defn- backfill-new-chars
+  "a helper fn for str->letters that takes the new-chars array (after knowing that the next character cannot be added to it because the resultant char path would not be in the trie) as input. we now need to process the new-chars array to test whether it (or else, its substrings) are themselves in the trie.  we need to work backwards to find the maximally long substring (char seq) that is also in trie.
+  this fn is set up as O(n^2) on the assumption that input sequences won't be too big (the sequences that make up the paths of the trie don't have too many shared long sequences that start at the trie root).
+  this fn might be needed to distinguish, for example, between a 3-char letter and 2 smaller chars (ex: \"ksh\" vs \"k\" + \"sh\" -- ignore the fact that க்ஷ் and ஸ் aren't originally Thamil).  in fact, this fn probably isn't necessary for original Thamil letters, and may be only an issue for English transliteration of Grantha letters, or more of an issue for others languages which require 3+ chars to form a letter)"
+  [trie new-chars]
+  (loop [chars new-chars
+         in-trie-letters []
+         idx (count chars)]
+    (condp = idx
+      0 in-trie-letters
+      1 (recur (drop 1 chars) (conj in-trie-letters (str (first chars))) (count (drop 1 chars)))
+      ;; else
+      (if (in-trie? trie (take idx chars))
+        (recur (drop idx chars) (conj in-trie-letters (apply str (take idx chars))) (count (drop idx chars)))
+        (recur chars in-trie-letters (dec idx))))))
+
 (defn str->letters
-  "take a string and split it into its constitutent தமிழ் + non-complex letters (non-complex = all left-to-right, 1-to-1 codepoint-to-glyph encodings -- this includes all Western languages)"
+  "take a string and split it into its constitutent தமிழ் + non-complex letters (non-complex = all left-to-right, 1-to-1 codepoint-to-glyph encodings -- this includes all Western languages).  in the optional opts map, if :transform is true, then use the terminus-attached values for transliteration / format conversion"
   ([s]
      (str->letters codepoint-trie s))
-  ([trie s]
+  ([trie s & [{:keys [transform] :as opts}]]
      ;; loop is like a procedural for loop or while loop
      ;; this loop is like a for loop, where 0 <= idx < (count s)
      (loop [idx 0
@@ -88,7 +104,7 @@
          ;; there are still chars still not fully processed
          (if (empty? new-chars)
            letters
-           (conj letters (apply str new-chars)))
+           (concat letters (backfill-new-chars trie new-chars)))
          ;; start next iteration
          (let [next-char (.charAt s idx)]
            ;; if adding the next character makes a prefix in trie no
@@ -100,7 +116,7 @@
              ;; and reset our next prefix starting with the new char
              (if (empty? new-chars)
                (recur (inc idx) (conj new-chars next-char) letters)
-               (recur (inc idx) [next-char] (conj letters (apply str new-chars))))
+               (recur (inc idx) [next-char] (concat letters (backfill-new-chars trie new-chars))))
              (recur (inc idx) (conj new-chars next-char) letters)))))))
 
 ;;;;;;;;;;;;;;
