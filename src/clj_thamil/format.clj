@@ -77,15 +77,27 @@
   ([s]
      (str->letters codepoint-trie s))
   ([trie s]
+     ;; loop is like a procedural for loop or while loop
+     ;; this loop is like a for loop, where 0 <= idx < (count s)
      (loop [idx 0
             new-chars []
             letters []]
+       ;; test if we've consumed our entire input string
        (if (= idx (count s))
+         ;; test whether we have handled entire input string, or if
+         ;; there are still chars still not fully processed
          (if (empty? new-chars)
            letters
            (conj letters (apply str new-chars)))
+         ;; start next iteration
          (let [next-char (.charAt s idx)]
+           ;; if adding the next character makes a prefix in trie no
+           ;; longer in trie, then we have our maximally long prefix.
+           ;; if not, just add the char and continue
            (if (nil? (trie-prefix-subtree trie (apply str (conj new-chars next-char))))
+             ;; test whether this is just because we're at the
+             ;; beginning of our string.  if not, return our prefix
+             ;; and reset our next prefix starting with the new char
              (if (empty? new-chars)
                (recur (inc idx) (conj new-chars next-char) letters)
                (recur (inc idx) [next-char] (conj letters (apply str new-chars))))
