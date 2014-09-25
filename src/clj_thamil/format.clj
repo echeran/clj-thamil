@@ -1,6 +1,10 @@
 (ns clj-thamil.format
   (:use clj-thamil.core))
 
+;;;;;;;;;;
+;; letters
+;;;;;;;;;;
+
 (def letters [["ஃ" "அ" "ஆ" "இ" "ஈ" "உ" "ஊ" "எ" "ஏ" "ஐ" "ஒ" "ஓ" "ஔ"]
               ["க்" "க" "கா" "கி" "கீ" "கு" "கூ" "கெ" "கே" "கை" "கொ" "கோ" "கௌ"]
               ["ங்" "ங" "ஙா" "ஙி" "ஙீ" "ஙு" "ஙூ" "ஙெ" "ஙே" "ஙை" "ஙொ" "ஙோ" "ஙௌ"]
@@ -68,6 +72,16 @@
       (find nil)
       boolean))
 
+(defn get-in-trie
+  "return the corresponding value from the trie -- either the combined version of the input seq, or the value attached to the terminus of the input seq in the trie"
+  [trie sq] 
+  (if (in-trie? trie sq)
+    (let [subtree (trie-prefix-subtree trie sq)]
+      (if (nil? (get subtree nil))
+        (apply str sq)
+        (get subtree nil)))
+    (apply str sq)))
+
 (def ^{:private true
        :doc "a trie that converts a string of characters/codepoints into strings representing the individual letters in தமிழ்"}
   codepoint-trie (make-trie letters))
@@ -76,16 +90,16 @@
   "a helper fn for str->letters that takes the new-chars array (after knowing that the next character cannot be added to it because the resultant char path would not be in the trie) as input. we now need to process the new-chars array to test whether it (or else, its substrings) are themselves in the trie.  we need to work backwards to find the maximally long substring (char seq) that is also in trie.
   this fn is set up as O(n^2) on the assumption that input sequences won't be too big (the sequences that make up the paths of the trie don't have too many shared long sequences that start at the trie root).
   this fn might be needed to distinguish, for example, between a 3-char letter and 2 smaller chars (ex: \"ksh\" vs \"k\" + \"sh\" -- ignore the fact that க்ஷ் and ஸ் aren't originally Thamil).  in fact, this fn probably isn't necessary for original Thamil letters, and may be only an issue for English transliteration of Grantha letters, or more of an issue for others languages which require 3+ chars to form a letter)"
-  [trie new-chars]
+  [trie new-chars & [{:keys [flat-output] :as opts}]]
   (loop [chars new-chars
          in-trie-letters []
          idx (count chars)]
     (condp = idx
-      0 in-trie-letters
-      1 (recur (drop 1 chars) (conj in-trie-letters (str (first chars))) (count (drop 1 chars)))
+      0 (if-not flat-output (flatten in-trie-letters) in-trie-letters)
+      1 (recur (drop 1 chars) (conj in-trie-letters (get-in-trie trie (take 1 chars))) (count (drop 1 chars)))
       ;; else
       (if (in-trie? trie (take idx chars))
-        (recur (drop idx chars) (conj in-trie-letters (apply str (take idx chars))) (count (drop idx chars)))
+        (recur (drop idx chars) (conj in-trie-letters (get-in-trie trie (take idx chars))) (count (drop idx chars)))
         (recur chars in-trie-letters (dec idx))))))
 
 (defn str->letters
@@ -118,6 +132,263 @@
                (recur (inc idx) (conj new-chars next-char) letters)
                (recur (inc idx) [next-char] (concat letters (backfill-new-chars trie new-chars))))
              (recur (inc idx) (conj new-chars next-char) letters)))))))
+
+;;;;;;;;;;;
+;; phonemes
+;;;;;;;;;;;
+
+(def ^{:doc "a map whose keys are தமிழ் letters and whose values are sequences of the constituent phonemes (represented as strings) of those letters. letters are from the set {உயிர்-, மெய்-, உயிர்மெய்-}எழுத்துகள், phonemes are from the set {உயிர்-,மெய்-}எழுத்துகள்"}
+  phoneme-map
+  {"ஃ" ["ஃ"],
+   "அ" ["அ"],
+   "ஆ" ["ஆ"],
+   "இ" ["இ"],
+   "ஈ" ["ஈ"],
+   "உ" ["உ"],
+   "ஊ" ["ஊ"],
+   "எ" ["எ"],
+   "ஏ" ["ஏ"],
+   "ஐ" ["ஐ"],
+   "ஒ" ["ஒ"],
+   "ஓ" ["ஓ"],
+   "ஔ" ["ஔ"],
+   "க்" ["க்"],
+   "க" ["க்" "அ"],
+   "கா" ["க்" "ஆ"],
+   "கி" ["க்" "இ"],
+   "கீ" ["க்" "ஈ"],
+   "கு" ["க்" "உ"],
+   "கூ" ["க்" "ஊ"],
+   "கெ" ["க்" "எ"],
+   "கே" ["க்" "ஏ"],
+   "கை" ["க்" "ஐ"],
+   "கொ" ["க்" "ஒ"],
+   "கோ" ["க்" "ஓ"],
+   "கௌ" ["க்" "ஔ"],
+   "ங்" ["ங்"],
+   "ங" ["ங்" "அ"],
+   "ஙா" ["ங்" "ஆ"],
+   "ஙி" ["ங்" "இ"],
+   "ஙீ" ["ங்" "ஈ"],
+   "ஙு" ["ங்" "உ"],
+   "ஙூ" ["ங்" "ஊ"],
+   "ஙெ" ["ங்" "எ"],
+   "ஙே" ["ங்" "ஏ"],
+   "ஙை" ["ங்" "ஐ"],
+   "ஙொ" ["ங்" "ஒ"],
+   "ஙோ" ["ங்" "ஓ"],
+   "ஙௌ" ["ங்" "ஔ"],
+   "ச்" ["ச்"],
+   "ச" ["ச்" "அ"],
+   "சா" ["ச்" "ஆ"],
+   "சி" ["ச்" "இ"],
+   "சீ" ["ச்" "ஈ"],
+   "சு" ["ச்" "உ"],
+   "சூ" ["ச்" "ஊ"],
+   "செ" ["ச்" "எ"],
+   "சே" ["ச்" "ஏ"],
+   "சை" ["ச்" "ஐ"],
+   "சொ" ["ச்" "ஒ"],
+   "சோ" ["ச்" "ஓ"],
+   "சௌ" ["ச்" "ஔ"],
+   "ஞ்" ["ஞ்"],
+   "ஞ" ["ஞ்" "அ"],
+   "ஞா" ["ஞ்" "ஆ"],
+   "ஞி" ["ஞ்" "இ"],
+   "ஞீ" ["ஞ்" "ஈ"],
+   "ஞு" ["ஞ்" "உ"],
+   "ஞூ" ["ஞ்" "ஊ"],
+   "ஞெ" ["ஞ்" "எ"],
+   "ஞே" ["ஞ்" "ஏ"],
+   "ஞை" ["ஞ்" "ஐ"],
+   "ஞொ" ["ஞ்" "ஒ"],
+   "ஞோ" ["ஞ்" "ஓ"],
+   "ஞௌ" ["ஞ்" "ஔ"],
+   "ட்" ["ட்"],
+   "ட" ["ட்" "அ"],
+   "டா" ["ட்" "ஆ"],
+   "டி" ["ட்" "இ"],
+   "டீ" ["ட்" "ஈ"],
+   "டு" ["ட்" "உ"],
+   "டூ" ["ட்" "ஊ"],
+   "டெ" ["ட்" "எ"],
+   "டே" ["ட்" "ஏ"],
+   "டை" ["ட்" "ஐ"],
+   "டொ" ["ட்" "ஒ"],
+   "டோ" ["ட்" "ஓ"],
+   "டௌ" ["ட்" "ஔ"],
+   "ண்" ["ண்"],
+   "ண" ["ண்" "அ"],
+   "ணா" ["ண்" "ஆ"],
+   "ணி" ["ண்" "இ"],
+   "ணீ" ["ண்" "ஈ"],
+   "ணு" ["ண்" "உ"],
+   "ணூ" ["ண்" "ஊ"],
+   "ணெ" ["ண்" "எ"],
+   "ணே" ["ண்" "ஏ"],
+   "ணை" ["ண்" "ஐ"],
+   "ணொ" ["ண்" "ஒ"],
+   "ணோ" ["ண்" "ஓ"],
+   "ணௌ" ["ண்" "ஔ"],
+   "த்" ["த்"],
+   "த" ["த்" "அ"],
+   "தா" ["த்" "ஆ"],
+   "தி" ["த்" "இ"],
+   "தீ" ["த்" "ஈ"],
+   "து" ["த்" "உ"],
+   "தூ" ["த்" "ஊ"],
+   "தெ" ["த்" "எ"],
+   "தே" ["த்" "ஏ"],
+   "தை" ["த்" "ஐ"],
+   "தொ" ["த்" "ஒ"],
+   "தோ" ["த்" "ஓ"],
+   "தௌ" ["த்" "ஔ"],
+   "ந்" ["ந்"],
+   "ந" ["ந்" "அ"],
+   "நா" ["ந்" "ஆ"],
+   "நி" ["ந்" "இ"],
+   "நீ" ["ந்" "ஈ"],
+   "நு" ["ந்" "உ"],
+   "நூ" ["ந்" "ஊ"],
+   "நெ" ["ந்" "எ"],
+   "நே" ["ந்" "ஏ"],
+   "நை" ["ந்" "ஐ"],
+   "நொ" ["ந்" "ஒ"],
+   "நோ" ["ந்" "ஓ"],
+   "நௌ" ["ந்" "ஔ"],
+   "ப்" ["ப்"],
+   "ப" ["ப்" "அ"],
+   "பா" ["ப்" "ஆ"],
+   "பி" ["ப்" "இ"],
+   "பீ" ["ப்" "ஈ"],
+   "பு" ["ப்" "உ"],
+   "பூ" ["ப்" "ஊ"],
+   "பெ" ["ப்" "எ"],
+   "பே" ["ப்" "ஏ"],
+   "பை" ["ப்" "ஐ"],
+   "பொ" ["ப்" "ஒ"],
+   "போ" ["ப்" "ஓ"],
+   "பௌ" ["ப்" "ஔ"],
+   "ம்" ["ம்"],
+   "ம" ["ம்" "அ"],
+   "மா" ["ம்" "ஆ"],
+   "மி" ["ம்" "இ"],
+   "மீ" ["ம்" "ஈ"],
+   "மு" ["ம்" "உ"],
+   "மூ" ["ம்" "ஊ"],
+   "மெ" ["ம்" "எ"],
+   "மே" ["ம்" "ஏ"],
+   "மை" ["ம்" "ஐ"],
+   "மொ" ["ம்" "ஒ"],
+   "மோ" ["ம்" "ஓ"],
+   "மௌ" ["ம்" "ஔ"],
+   "ய்" ["ய்"],
+   "ய" ["ய்" "அ"],
+   "யா" ["ய்" "ஆ"],
+   "யி" ["ய்" "இ"],
+   "யீ" ["ய்" "ஈ"],
+   "யு" ["ய்" "உ"],
+   "யூ" ["ய்" "ஊ"],
+   "யெ" ["ய்" "எ"],
+   "யே" ["ய்" "ஏ"],
+   "யை" ["ய்" "ஐ"],
+   "யொ" ["ய்" "ஒ"],
+   "யோ" ["ய்" "ஓ"],
+   "யௌ" ["ய்" "ஔ"],
+   "ர்" ["ர்"],
+   "ர" ["ர்" "அ"],
+   "ரா" ["ர்" "ஆ"],
+   "ரி" ["ர்" "இ"],
+   "ரீ" ["ர்" "ஈ"],
+   "ரு" ["ர்" "உ"],
+   "ரூ" ["ர்" "ஊ"],
+   "ரெ" ["ர்" "எ"],
+   "ரே" ["ர்" "ஏ"],
+   "ரை" ["ர்" "ஐ"],
+   "ரொ" ["ர்" "ஒ"],
+   "ரோ" ["ர்" "ஓ"],
+   "ரௌ" ["ர்" "ஔ"],
+   "ல்" ["ல்"],
+   "ல" ["ல்" "அ"],
+   "லா" ["ல்" "ஆ"],
+   "லி" ["ல்" "இ"],
+   "லீ" ["ல்" "ஈ"],
+   "லு" ["ல்" "உ"],
+   "லூ" ["ல்" "ஊ"],
+   "லெ" ["ல்" "எ"],
+   "லே" ["ல்" "ஏ"],
+   "லை" ["ல்" "ஐ"],
+   "லொ" ["ல்" "ஒ"],
+   "லோ" ["ல்" "ஓ"],
+   "லௌ" ["ல்" "ஔ"],
+   "வ்" ["வ்"],
+   "வ" ["வ்" "அ"],
+   "வா" ["வ்" "ஆ"],
+   "வி" ["வ்" "இ"],
+   "வீ" ["வ்" "ஈ"],
+   "வு" ["வ்" "உ"],
+   "வூ" ["வ்" "ஊ"],
+   "வெ" ["வ்" "எ"],
+   "வே" ["வ்" "ஏ"],
+   "வை" ["வ்" "ஐ"],
+   "வொ" ["வ்" "ஒ"],
+   "வோ" ["வ்" "ஓ"],
+   "வௌ" ["வ்" "ஔ"],
+   "ழ்" ["ழ்"],
+   "ழ" ["ழ்" "அ"],
+   "ழா" ["ழ்" "ஆ"],
+   "ழி" ["ழ்" "இ"],
+   "ழீ" ["ழ்" "ஈ"],
+   "ழு" ["ழ்" "உ"],
+   "ழூ" ["ழ்" "ஊ"],
+   "ழெ" ["ழ்" "எ"],
+   "ழே" ["ழ்" "ஏ"],
+   "ழை" ["ழ்" "ஐ"],
+   "ழொ" ["ழ்" "ஒ"],
+   "ழோ" ["ழ்" "ஓ"],
+   "ழௌ" ["ழ்" "ஔ"],
+   "ள்" ["ள்"],
+   "ள" ["ள்" "அ"],
+   "ளா" ["ள்" "ஆ"],
+   "ளி" ["ள்" "இ"],
+   "ளீ" ["ள்" "ஈ"],
+   "ளு" ["ள்" "உ"],
+   "ளூ" ["ள்" "ஊ"],
+   "ளெ" ["ள்" "எ"],
+   "ளே" ["ள்" "ஏ"],
+   "ளை" ["ள்" "ஐ"],
+   "ளொ" ["ள்" "ஒ"],
+   "ளோ" ["ள்" "ஓ"],
+   "ளௌ" ["ள்" "ஔ"],
+   "ற்" ["ற்"],
+   "ற" ["ற்" "அ"],
+   "றா" ["ற்" "ஆ"],
+   "றி" ["ற்" "இ"],
+   "றீ" ["ற்" "ஈ"],
+   "று" ["ற்" "உ"],
+   "றூ" ["ற்" "ஊ"],
+   "றெ" ["ற்" "எ"],
+   "றே" ["ற்" "ஏ"],
+   "றை" ["ற்" "ஐ"],
+   "றொ" ["ற்" "ஒ"],
+   "றோ" ["ற்" "ஓ"],
+   "றௌ" ["ற்" "ஔ"],
+   "ன்" ["ன்"],
+   "ன" ["ன்" "அ"],
+   "னா" ["ன்" "ஆ"],
+   "னி" ["ன்" "இ"],
+   "னீ" ["ன்" "ஈ"],
+   "னு" ["ன்" "உ"],
+   "னூ" ["ன்" "ஊ"],
+   "னெ" ["ன்" "எ"],
+   "னே" ["ன்" "ஏ"],
+   "னை" ["ன்" "ஐ"],
+   "னொ" ["ன்" "ஒ"],
+   "னோ" ["ன்" "ஓ"],
+   "னௌ" ["ன்" "ஔ"]})
+
+(def  ^{:doc "a trie of the individual letters in தமிழ், whose terminus-attached values are sequences of each letter's phonemes -- this trie can be used in str->letters for directly splitting a word into its phonemes"}
+  phoneme-trie (make-trie phoneme-map))
 
 ;;;;;;;;;;;;;;
 ;; sorting fns
