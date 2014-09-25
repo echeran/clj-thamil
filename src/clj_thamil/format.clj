@@ -83,8 +83,8 @@
     (apply str sq)))
 
 (def ^{:private true
-       :doc "a trie that converts a string of characters/codepoints into strings representing the individual letters in தமிழ்"}
-  codepoint-trie (make-trie letters))
+       :doc "a trie that contains all strings representing the individual letters in தமிழ்"}
+  letter-trie (make-trie letters))
 
 (defn- backfill-new-chars
   "a helper fn for str->letters that takes the new-chars array (after knowing that the next character cannot be added to it because the resultant char path would not be in the trie) as input. we now need to process the new-chars array to test whether it (or else, its substrings) are themselves in the trie.  we need to work backwards to find the maximally long substring (char seq) that is also in trie.
@@ -103,9 +103,9 @@
         (recur chars in-trie-letters (dec idx))))))
 
 (defn str->letters
-  "take a string and split it into its constitutent தமிழ் + non-complex letters (non-complex = all left-to-right, 1-to-1 codepoint-to-glyph encodings -- this includes all Western languages).  in the optional opts map, if :transform is true, then use the terminus-attached values for transliteration / format conversion"
+  "take a string and split it into its constitutent தமிழ் + non-complex letters (non-complex = all left-to-right, 1-to-1 codepoint-to-glyph encodings -- this includes all Western languages).  uses get-in-trie for output  -- to determine whether the output for every recognized sequence in the trie is that sequence, or the value to the terminus of that sequence in the trie (ex: for transliteration / format conversion)"
   ([s]
-     (str->letters codepoint-trie s))
+     (str->letters letter-trie s))
   ([trie s & [{:keys [transform] :as opts}]]
      ;; loop is like a procedural for loop or while loop
      ;; this loop is like a for loop, where 0 <= idx < (count s)
