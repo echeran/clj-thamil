@@ -90,7 +90,7 @@
                dorun செய்யோட்டம்
                doall செய்யெல்லாம்
                str சரம்
-               interpose பிண்ணு
+               interpose இடைபொருத்து
                })
 
 (def forms-map '{
