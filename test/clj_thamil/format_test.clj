@@ -129,6 +129,31 @@
       (is (= true (word-before? "ஈ" "கொசு")))
       (is (= false (word-before? "கொசு" "ஈ"))))))
 
+(deftest util-fn-test
+  (let [s "abcqwertyuiop"]
+    (testing "seq-prefix" 
+      (is (= [] (seq-prefix nil nil)))
+      (is (= [] (seq-prefix nil [])))
+      (is (= [] (seq-prefix [] nil)))
+      (is (= [] (seq-prefix nil [1 2])))
+      (is (= [\a \b \c] (seq-prefix "abcdefgh" s)))
+      (is (= [\a \b] (seq-prefix "abbb" s)))
+      (is (= [] (seq-prefix "zyx" s))))
+    (testing "seq-prefix?" 
+      (is (= false (seq-prefix? nil nil)))
+      (is (= false (seq-prefix? nil [])))
+      (is (= false (seq-prefix? [] nil)))
+      (is (= false (seq-prefix? nil [1 2])))
+      (is (= false (seq-prefix? "abcdefgh" s)))
+      (is (= false (seq-prefix? "abbb" s)))
+      (is (= false (seq-prefix? "zyx" s))) 
+      (is (= false (seq-prefix? "abc" s))) 
+      (is (= true (seq-prefix? s "abc")))
+      (is (= true (seq-prefix? s "a")))
+      (is (= true (seq-prefix? s "")))
+      (is (= true (seq-prefix? s [])))
+      (is (= true (seq-prefix? s nil))))))
+
 (deftest word-char-traits-test 
   (testing "word and char traits"
     (testing "char traits"

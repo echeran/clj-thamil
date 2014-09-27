@@ -446,6 +446,31 @@
      (not (get #{\$ \_} ch))
      (Character/isJavaIdentifierPart ch))))
 
+;; TODO: DRY on seq-prefix & seq-prefix? -- is there a Clojure implementation?
+
+(defn seq-prefix
+  "return the shared prefix between the 2 input sequence"
+  [seq1 seq2] 
+  (loop [s1 seq1
+         s2 seq2
+         comm-prefix []]
+    (let [f1 (first s1)
+          f2 (first s2)]
+      (if (or (empty? s1)
+              (empty? s2)
+              (not= f1 f2))
+        comm-prefix
+        (recur (rest s1) (rest s2) (conj comm-prefix f1))))))
+
+(defn seq-prefix?
+  "return whether the query seq is a prefix of the target"
+  [tgt qry]
+  (let [pfx (seq-prefix tgt qry)]
+    (boolean
+     (and (seq tgt)
+          (or (= (seq qry) pfx)
+              (and (empty? qry) (empty? pfx)))))))
+
 (defn wordy-seq
   "take a string and produce a seq of the Unicode-aware version of the \\w+ regex pattern - basically, split input string into all chunks of non-whitepsace.  Originally, I called this fn word-seq, but that is not true for all languages and/or throughout time where there was no spearation between words (ex: Thai, Chinese, Japanese, Latin manuscripts, ancient Thamil stone inscriptions, etc.)"
   [s]
