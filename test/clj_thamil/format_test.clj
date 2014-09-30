@@ -152,7 +152,13 @@
       (is (= true (seq-prefix? s "a")))
       (is (= true (seq-prefix? s "")))
       (is (= true (seq-prefix? s [])))
-      (is (= true (seq-prefix? s nil))))))
+      (is (= true (seq-prefix? s nil))))
+    (testing "seq-index-of"
+      (let [check-seq-index-of (fn [s1 s2] (= (.indexOf s1 s2)
+                                         (seq-index-of s1 s2)))]
+        (is (= true (check-seq-index-of "abc" "a")))
+        (is (true? (check-seq-index-of "a" "abc")))
+        (is (true? (check-seq-index-of "" "abc")))))))
 
 (deftest word-char-traits-test 
   (testing "word and char traits"
