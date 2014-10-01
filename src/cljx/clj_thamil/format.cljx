@@ -471,6 +471,13 @@
           (or (= (seq qry) pfx)
               (and (empty? qry) (empty? pfx)))))))
 
+(defn prefix?
+  "return whether the 2nd word is a prefix of the 1st word, based on தமிழ் phonemes"
+  [str1 str2]
+  (let [phonemes1 (str->letters phoneme-trie str1)
+        phonemes2 (str->letters phoneme-trie str2)]
+    (seq-prefix? phonemes1 phonemes2)))
+
 ;; TODO: DRY on seq-index-of -- is there already a Clojure implementation?
 
 (defn seq-index-of

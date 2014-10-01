@@ -158,7 +158,19 @@
                                          (seq-index-of s1 s2)))]
         (is (= true (check-seq-index-of "abc" "a")))
         (is (true? (check-seq-index-of "a" "abc")))
-        (is (true? (check-seq-index-of "" "abc")))))))
+        (is (true? (check-seq-index-of "" "abc")))))
+    (testing "prefix?" 
+      (is (true? (prefix? "வந்தான்" "")))
+      (is (true? (prefix? "வந்தான்" "வ்")))
+      (is (true? (prefix? "வந்தான்" "வ")))
+      (is (true? (prefix? "வந்தான்" "வந்")))
+      (is (false? (prefix? "வந்தான்" "வந")))
+      (is (true? (prefix? "வந்தான்" "வந்த்")))
+      (is (false? (prefix? "வந்தான்" "வந்து")))
+      (is (true? (prefix? "வந்தான்" "வந்தா")))
+      (is (true? (prefix? "வந்தான்" "வந்தான்")))
+      (is (false? (prefix? "வந்தான்" "வந்தானே")))
+      (is (true? (prefix? "வந்தானே" "வந்தான்"))))))
 
 (deftest word-char-traits-test 
   (testing "word and char traits"
