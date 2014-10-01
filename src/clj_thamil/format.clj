@@ -487,6 +487,11 @@
           idx
           (recur (rest ts) (inc idx)))))))
 
+(defn index-of
+  "a wrapper around the native fn call that gives the index of the first occurrence of a particular substring"
+  [tgt qry]
+  (.indexOf tgt qry))
+
 (defn wordy-seq
   "take a string and produce a seq of the Unicode-aware version of the \\w+ regex pattern - basically, split input string into all chunks of non-whitepsace.  Originally, I called this fn word-seq, but that is not true for all languages and/or throughout time where there was no spearation between words (ex: Thai, Chinese, Japanese, Latin manuscripts, ancient Thamil stone inscriptions, etc.)"
   [s]
@@ -511,8 +516,8 @@
         next-chunk (first wordy-chunks-after) 
         prev-chunk-wordiness (chunk-seq-wordy? (last partitions-before))
         next-chunk-wordiness (chunk-seq-wordy? (first partitions-after))
-        prev-chunk-idx (if prev-chunk (seq-index-of before prev-chunk) -1)
-        next-chunk-idx (if next-chunk (seq-index-of after next-chunk) -1)
+        prev-chunk-idx (if prev-chunk (index-of before prev-chunk) -1)
+        next-chunk-idx (if next-chunk (index-of after next-chunk) -1)
         prev-chunk-flush (= idx (+ prev-chunk-idx (count prev-chunk)))
         next-chunk-flush (zero? next-chunk-idx)]
     (cond
