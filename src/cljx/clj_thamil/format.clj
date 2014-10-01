@@ -487,10 +487,11 @@
           idx
           (recur (rest ts) (inc idx)))))))
 
-(defn index-of
-  "a wrapper around the native fn call that gives the index of the first occurrence of a particular substring"
-  [tgt qry]
-  (.indexOf tgt qry))
+(def ^{:doc "a wrapper around the native fn call that gives the index of the first occurrence of a particular substring"}
+  index-of
+  #+cljs seq-index-of 
+  #+clj (fn [tgt qry]
+            (.indexOf tgt qry)))
 
 (defn wordy-seq
   "take a string and produce a seq of the Unicode-aware version of the \\w+ regex pattern - basically, split input string into all chunks of non-whitepsace.  Originally, I called this fn word-seq, but that is not true for all languages and/or throughout time where there was no spearation between words (ex: Thai, Chinese, Japanese, Latin manuscripts, ancient Thamil stone inscriptions, etc.)"
