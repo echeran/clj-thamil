@@ -8,8 +8,11 @@
   ;; (if not, then I don't know why)
 
   :jar-exclusions [#"\.cljx|\.swp|\.swo|\.DS_Store"]
-  :source-paths ["src/cljx"]
-  :test-paths ["target/test-classes"]
+  :source-paths ["src" "target/generated/src/clj"]
+  :resource-paths ["target/generated/src/cljs"]
+  :test-paths ["test" "target/generated/test"]
+
+  :plugins [[lein-cljsbuild "1.0.3"]]
 
 
   :cljx {:builds [{:source-paths ["src/cljx"]
@@ -36,9 +39,11 @@
   
   :hooks [cljx.hooks]
 
-  :profiles {:dev {:plugins [[org.clojure/clojurescript "0.0-2156"]
-                             [com.keminglabs/cljx "0.3.2"]
-                             [lein-cljsbuild "1.0.1"]]
+  :aliases {"test-cljs" ["do" ["cljx" "once"] ["cljsbuild" "test"]]
+            "test-all"  ["do" ["with-profile" "default:+1.6" "test"] ["cljsbuild" "test"]]}
+
+  :profiles {:dev {:plugins [[com.keminglabs/cljx "0.4.0"]]
                    :aliases {"cleantest" ["do" "clean," "cljx" "once," "test,"
                                           "cljsbuild" "test"]
-                             "deploy" ["do" "clean," "cljx" "once," "deploy" "clojars"]}}})
+                             "deploy" ["do" "clean," "cljx" "once," "deploy" "clojars"]}}
+             :provided {:dependencies [[org.clojure/clojurescript "0.0-2234"]]}})
