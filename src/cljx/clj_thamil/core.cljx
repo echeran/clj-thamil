@@ -91,6 +91,16 @@
                doall செய்யெல்லாம்
                str சரம்
                interpose இடைபொருத்து
+               find கண்டுபிடி
+               get பெறு
+               apply செயல்படுத்து
+               count எண்ணு
+               every? ஒவ்வொன்றுமா?
+               true? உண்மையா?
+               false? பொய்மையா?
+               concat தொடு
+               identity அடையாளம்
+               reverse எதிர்மறை
                })
 
 (def forms-map '{
@@ -110,6 +120,8 @@
                  doseq செய்வரிசை
                  ;; for ஒவ்வொன்றுக்கும்
                  for ஒன்றொன்றுக்கு
+                 cond பொறுத்து
+                 do செய்
                 })
 
 ;; do the actual "translation" for bindings, fns, and any other value
