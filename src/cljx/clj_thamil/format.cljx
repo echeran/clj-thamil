@@ -60,6 +60,10 @@
     (let [s (flatten sequence)]
       (reduce trie-add-seq {} s))))
 
+(def ^{:private true
+       :doc "a trie that contains all strings representing the individual letters in தமிழ்"}
+  letter-trie (make-trie letters))
+
 (defn trie-prefix-subtree
   "take a trie and a sequence, look up the sequence in the trie, and return the subtree"
   [trie sq]
@@ -67,10 +71,12 @@
 
 (defn in-trie?
   "return whether the sequence exists in the trie"
-  [trie sq]
-  (-> (trie-prefix-subtree trie sq)
-      (find nil)
-      boolean))
+  ([sq]
+     (in-trie? letter-trie sq))
+  ([trie sq]
+     (-> (trie-prefix-subtree trie sq)
+         (find nil)
+         boolean)))
 
 (defn get-in-trie
   "return the corresponding value from the trie -- either the combined version of the input seq, or the value attached to the terminus of the input seq in the trie"
@@ -81,10 +87,6 @@
         (apply str sq)
         (get subtree nil)))
     (apply str sq)))
-
-(def ^{:private true
-       :doc "a trie that contains all strings representing the individual letters in தமிழ்"}
-  letter-trie (make-trie letters))
 
 (defn- backfill-new-chars
   "a helper fn for str->letters that takes the new-chars array (after knowing that the next character cannot be added to it because the resultant char path would not be in the trie) as input. we now need to process the new-chars array to test whether it (or else, its substrings) are themselves in the trie.  we need to work backwards to find the maximally long substring (char seq) that is also in trie.
