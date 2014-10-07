@@ -100,7 +100,11 @@
                false? பொய்மையா?
                concat தொடு
                identity அடையாளம்
-               reverse எதிர்மறை
+               reverse புரட்டு
+               some எதாவது
+               flatten தட்டையாக்கு
+
+               boolean பூலியன்
                })
 
 (def forms-map '{
@@ -115,13 +119,19 @@
                  and மற்றும்
                  or அல்லது
                  not அன்று
-                 ;; else என்றேல் ??  does அன்றி make sense?
+                 ;; else அன்றி ?
                  loop சுற்று
                  doseq செய்வரிசை
                  ;; for ஒவ்வொன்றுக்கும்
                  for ஒன்றொன்றுக்கு
                  cond பொறுத்து
                  do செய்
+                 
+                 ;; clojure.text
+                 deftest வரையறு-பரிசோதனை
+                 testing பரிசோதிக்கும்
+                 is ஆகும்
+                 are பல-ஆகும்
                 })
 
 ;; do the actual "translation" for bindings, fns, and any other value
