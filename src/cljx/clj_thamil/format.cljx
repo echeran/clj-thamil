@@ -1,4 +1,5 @@
 (ns clj-thamil.format
+  (:require [clojure.set :as set])
   (:use clj-thamil.core))
 
 ;;;;;;;;;;
@@ -28,6 +29,9 @@
 (def vowels
   (let [vowel-row (first letters)]
     (concat (rest vowel-row) [(first vowel-row)])))
+
+;; TODO: correct name of consonants in accordance w/ my own grammar
+;; lessons' terminology
 
 (def consonants (rest letters))
 
@@ -391,6 +395,8 @@
 
 (def  ^{:doc "a trie of the individual letters in தமிழ், whose terminus-attached values are sequences of each letter's phonemes -- this trie can be used in str->letters for directly splitting a word into its phonemes"}
   phoneme-trie (make-trie phoneme-map))
+
+(def inverse-phoneme-map (set/map-invert phoneme-map))
 
 ;;;;;;;;;;;;;;
 ;; sorting fns
