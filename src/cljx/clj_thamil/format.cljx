@@ -30,10 +30,9 @@
   (let [vowel-row (first letters)]
     (concat (rest vowel-row) [(first vowel-row)])))
 
-;; TODO: correct name of consonants in accordance w/ my own grammar
-;; lessons' terminology
+(def c-cv-letters (rest letters))
 
-(def consonants (rest letters))
+(def consonants (map first c-cv-letters))
 
 ;;;;;;;;;;;
 ;; trie fns
@@ -404,7 +403,7 @@
 
 (def ^{:private true
        :doc "a flattened seq of all தமிழ் letters in lexicographical (alphabetical) order -- put anohter way, in the order of அகர முதல் னரக இறுவாய் as the 2500 yr old grammatical compendium தொல்காப்பியம் states in its outset"}
-  letter-seq (flatten (concat vowels consonants)))
+  letter-seq (flatten (concat vowels c-cv-letters)))
 
 (def ^{:doc "a map where the key is a தமிழ் letter, and the value is a number indicating its relative position in sort order"}
   sort-map (zipmap letter-seq (range)))
