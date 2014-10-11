@@ -486,6 +486,13 @@
         phonemes2 (str->letters phoneme-trie str2)]
     (seq-prefix? phonemes1 phonemes2)))
 
+(defn suffix?
+  "return whether the 2nd word is a suffix of the 1st word, based on தமிழ் phonemes"
+  [str1 str2]
+  (let [phonemes1 (str->letters phoneme-trie str1)
+        phonemes2 (str->letters phoneme-trie str2)]
+    (seq-prefix? (reverse phonemes1) (reverse phonemes2))))
+
 ;; TODO: DRY on seq-index-of -- is there already a Clojure implementation?
 
 (defn seq-index-of
