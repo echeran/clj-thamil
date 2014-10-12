@@ -560,4 +560,23 @@
 
 (def wordy-chunk-under (comp first wordy-chunk-and-cursor-pos))
 
-
+(defn cursor-adjust
+  "given a string, a cursor position (idx), and a direction, give the new position of the cursor that that is on the boundary of the actual letters"
+  [s idx direction]
+  (let [[wordy-chunk rel-idx] (wordy-chunk-and-cursor-pos s idx)
+        letters (str->letters wordy-chunk)
+        indices (reductions #(+ %1 (count %2)) 0 letters)
+        before-idx (->> indices
+                        (take-while #(<= % idx))
+                        last)
+        after-idx (->> indices
+                       (drop-while #(< % idx))
+                       first)]
+    (if (= before-idx after-idx)
+      (do
+        (assert (= idx before-idx after-idx))
+        idx)
+      (case direction
+        (:to-first :முதல்-நோக்கி) before-idx
+        (:to-last :பின்-நோக்கி)  after-idx
+        after-idx))))
