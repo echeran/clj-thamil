@@ -92,9 +92,9 @@
     (apply str sq)))
 
 (defn- backfill-new-chars
-  "a helper fn for str->letters that takes the new-chars array (after knowing that the next character cannot be added to it because the resultant char path would not be in the trie) as input. we now need to process the new-chars array to test whether it (or else, its substrings) are themselves in the trie.  we need to work backwards to find the maximally long substring (char seq) that is also in trie.
+  "a helper fn for str->elems that takes the new-chars array (after knowing that the next character cannot be added to it because the resultant char path would not be in the trie) as input. we now need to process the new-chars array to test whether it (or else, its substrings) are themselves in the trie.  we need to work backwards to find the maximally long substring (char seq) that is also in trie.
   this fn is set up as O(n^2) on the assumption that input sequences won't be too big (the sequences that make up the paths of the trie don't have too many shared long sequences that start at the trie root).
-  this fn might be needed to distinguish, for example, between a 3-char letter and 2 smaller chars (ex: \"ksh\" vs \"k\" + \"sh\" -- ignore the fact that க்ஷ் and ஸ் aren't originally Thamil).  in fact, this fn probably isn't necessary for original Thamil letters, and may be only an issue for English transliteration of Grantha letters, or more of an issue for others languages which require 3+ chars to form a letter)"
+  this fn might be needed to distinguish, for example, between a 3-elem chunk and 2 smaller chnks (ex: \"ksh\" vs \"k\" + \"sh\" -- ignore the fact that க்ஷ் and ஸ் aren't originally Thamil).  in fact, this fn probably isn't necessary for original Thamil letters, since they only need 2 codepoints, and may be only an issue for English transliteration of Grantha letters, or more of an issue for others languages which require 3+ chars to form a letter)"
   [trie new-chars & [{:keys [flat-output] :as opts}]]
   (loop [chars new-chars
          in-trie-letters []
@@ -107,10 +107,10 @@
         (recur (drop idx chars) (conj in-trie-letters (get-in-trie trie (take idx chars))) (count (drop idx chars)))
         (recur chars in-trie-letters (dec idx))))))
 
-(defn str->letters
-  "take a string and split it into its constitutent தமிழ் + non-complex letters (non-complex = all left-to-right, 1-to-1 codepoint-to-glyph encodings -- this includes all Western languages).  uses get-in-trie for output  -- to determine whether the output for every recognized sequence in the trie is that sequence, or the value to the terminus of that sequence in the trie (ex: for transliteration / format conversion)"
+(defn str->elems
+  "take a string and split it into chunks based on the input trie.  for every maximally long sequence in the trie that is detected in the input string, the terminus-attached value is added to the output sequence if it exists (ex: useful for transliteration / format conversion), or else the string chunk itself is added."
   ([s]
-     (str->letters letter-trie s))
+     (str->elems letter-trie s))
   ([trie s & [{:keys [transform] :as opts}]]
      ;; loop is like a procedural for loop or while loop
      ;; this loop is like a for loop, where 0 <= idx < (count s)
@@ -139,8 +139,13 @@
              (recur (inc idx) (conj new-chars next-char) letters)))))))
 
 ;;;;;;;;;;;
-;; phonemes
+;; letters & phonemes
 ;;;;;;;;;;;
+
+(defn str->letters
+  "take a string and split it into its constitutent தமிழ் + non-complex letters (non-complex = all left-to-right, 1-to-1 codepoint-to-glyph encodings -- this includes all Western languages)"
+  [s]
+  (str->elems letter-trie s))
 
 (def ^{:doc "a map whose keys are தமிழ் letters and whose values are sequences of the constituent phonemes (represented as strings) of those letters. letters are from the set {உயிர்-, மெய்-, உயிர்மெய்-}எழுத்துகள், phonemes are from the set {உயிர்-,மெய்-}எழுத்துகள்"}
   phoneme-map
@@ -392,10 +397,15 @@
    "னோ" ["ன்" "ஓ"],
    "னௌ" ["ன்" "ஔ"]})
 
-(def  ^{:doc "a trie of the individual letters in தமிழ், whose terminus-attached values are sequences of each letter's phonemes -- this trie can be used in str->letters for directly splitting a word into its phonemes"}
+(def  ^{:doc "a trie of the individual letters in தமிழ், whose terminus-attached values are sequences of each letter's phonemes -- this trie can be used in str->elems for directly splitting a word into its phonemes"}
   phoneme-trie (make-trie phoneme-map))
 
 (def inverse-phoneme-map (set/map-invert phoneme-map))
+
+(defn str->phonemes
+  "take a string and split it into its constitutent தமிழ் phonemes"
+  [s]
+  (str->elems phoneme-trie s))
 
 ;;;;;;;;;;;;;;
 ;; sorting fns
@@ -423,8 +433,8 @@
 (defn word-before?
   "a 2-arg predicate indicating whether the first string comes before the second string lexicographically, handling தமிழ் letters in addition to 1-to-1 codepoint-to-letter encodings"
   [str1 str2]
-  (loop [s1 (str->letters str1)
-         s2 (str->letters str2)]
+  (loop [s1 (str->elems str1)
+         s2 (str->elems str2)]
     (cond (not (seq s1)) (boolean (seq s2))
           (not (seq s2)) false 
           (not= (first s1) (first s2)) (letter-before? (first s1) (first s2))
@@ -481,15 +491,15 @@
 (defn prefix?
   "return whether the 2nd word is a prefix of the 1st word, based on தமிழ் phonemes"
   [str1 str2]
-  (let [phonemes1 (str->letters phoneme-trie str1)
-        phonemes2 (str->letters phoneme-trie str2)]
+  (let [phonemes1 (str->elems phoneme-trie str1)
+        phonemes2 (str->elems phoneme-trie str2)]
     (seq-prefix? phonemes1 phonemes2)))
 
 (defn suffix?
   "return whether the 2nd word is a suffix of the 1st word, based on தமிழ் phonemes"
   [str1 str2]
-  (let [phonemes1 (str->letters phoneme-trie str1)
-        phonemes2 (str->letters phoneme-trie str2)]
+  (let [phonemes1 (str->elems phoneme-trie str1)
+        phonemes2 (str->elems phoneme-trie str2)]
     (seq-prefix? (reverse phonemes1) (reverse phonemes2))))
 
 ;; TODO: DRY on seq-index-of -- is there already a Clojure implementation?

@@ -50,14 +50,14 @@
         (is (= false (nil? (trie-prefix-subtree {\ப {\ந {\u0BCD {\த {\u0BC1 {nil \a}}}}}} "பந்து"))))
         (is (= false (nil? (trie-prefix-subtree {\ப {\ந {\u0BCD {\த {\u0BC1 {nil true}}}}}} "ப"))))
         (testing "splitting words directly into phonemes using phoneme trie"
-          (is (= ["வ்" "அ" "ண்" "அ" "க்" "க்" "அ" "ம்"] (str->letters phoneme-trie "வணக்கம்")))
-          (is (empty? (str->letters phoneme-trie nil)))
-          (is (empty? (str->letters phoneme-trie "")))
-          (is (= ["அ"] (str->letters phoneme-trie "அ")))
-          (is (= ["க்"] (str->letters phoneme-trie "க்")))
-          (is (= ["க்" "அ"] (str->letters phoneme-trie "க")))
-          (is (= ["க்" "ஊ"] (str->letters phoneme-trie "கூ")))
-          (is (= ["வ்" "இ" "ட்" "உ" "த்" "அ" "ல்" "ஐ"] (str->letters phoneme-trie "விடுதலை"))))))))
+          (is (= ["வ்" "அ" "ண்" "அ" "க்" "க்" "அ" "ம்"] (str->phonemes "வணக்கம்")))
+          (is (empty? (str->phonemes nil)))
+          (is (empty? (str->phonemes "")))
+          (is (= ["அ"] (str->phonemes "அ")))
+          (is (= ["க்"] (str->phonemes "க்")))
+          (is (= ["க்" "அ"] (str->phonemes "க")))
+          (is (= ["க்" "ஊ"] (str->phonemes "கூ")))
+          (is (= ["வ்" "இ" "ட்" "உ" "த்" "அ" "ல்" "ஐ"] (str->phonemes "விடுதலை"))))))))
 
 (deftest word-letter-test
   (testing "splitting strings of தமிழ் characters into constituent தமிழ் characters"
@@ -199,7 +199,8 @@
 (deftest cursor-pos-test
   (let [s1 "aldsk சிக்கல் sdfsdf234234lsdflksjdf Zürich"
         s2 "  alsfjs"
-        s3 "a    b"]
+        s3 "a    b"
+        s4 "சிக்கல்"]
     (testing "cursor position"
       (testing "wordy chunk under cursor"
         (is (= "aldsk" (wordy-chunk-under s1 0)))
