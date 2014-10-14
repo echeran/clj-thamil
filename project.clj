@@ -3,7 +3,8 @@
   :url "https://github.com/echeran/clj-thamil"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.5.1"]]
+  :dependencies [[org.clojure/clojure "1.5.1"]
+                 [org.clojure/data.csv "0.1.2"]]
   ;; this config seems to work with clojure 1.5.1 but may not 1.6.0
   ;; (if not, then I don't know why)
 
@@ -14,6 +15,9 @@
 
   :plugins [[lein-cljsbuild "1.0.3"]]
 
+  :aot [clj-thamil.format.analysis]
+
+  :main clj-thamil.format.analysis
 
   :cljx {:builds [{:source-paths ["src/cljx"]
                    :output-path "target/generated/src/clj"
