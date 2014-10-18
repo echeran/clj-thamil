@@ -1,14 +1,12 @@
 (ns clj-thamil.format.analysis
   (:require [clojure.java.io :as jio]
             [clojure.data.csv :as csv]
-            [clojure.string :as string])
-  (:use [clj-thamil.format :as fmt :only [letters
-                                          make-trie in-trie?
-                                          str->elems]])
+            [clojure.string :as string]
+            [clj-thamil.format :as fmt])
   (:gen-class))
 
 (def letters-plus-grantha
-  (concat letters 
+  (concat fmt/letters 
           [["ஜ்" "ஜ" "ஜா" "ஜி" "ஜீ" "ஜு" "ஜூ" "ஜெ" "ஜே" "ஜை" "ஜொ" "ஜோ" "ஜௌ"]
            ["ஷ்" "ஷ" "ஷா" "ஷி" "ஷீ" "ஷு" "ஷூ" "ஷெ" "ஷே" "ஷை" "ஷொ" "ஷோ" "ஷௌ"]
            ["ஸ்" "ஸ" "ஸா" "ஸி" "ஸீ" "ஸு" "ஸூ" "ஸெ" "ஸே" "ஸை" "ஸொ" "ஸோ" "ஸௌ"]
@@ -20,9 +18,9 @@
   "given a trie of strings (char seqs) and an input string, return a frequency map for every letter in the trie appearing in the input string"
   [trie s]
   (let [keep-fn (fn [x]
-                  (when (in-trie? trie x)
+                  (when (fmt/in-trie? trie x)
                     x))
-        letters (str->elems trie s)
+        letters (fmt/str->elems trie s)
         letters-in-trie (keep keep-fn letters)]
     (frequencies letters-in-trie)))
 
@@ -88,8 +86,8 @@
   "for a given letter grid and a sequence of strings, print out all of the stats"
   [letter-grid strs]
   (let [letter-seq (flatten letter-grid)
-        letter-trie (make-trie letter-seq)
-        str->letters (fn [s] (str->elems letter-trie s))
+        letter-trie (fmt/make-trie letter-seq)
+        str->letters (fn [s] (fmt/str->elems letter-trie s))
         fmap (trie-elem-string-seq-freqs letter-trie strs)
         fgrid (freq-grid letter-seq fmap)] 
     (print-vowel-col-sums fgrid letter-grid)
