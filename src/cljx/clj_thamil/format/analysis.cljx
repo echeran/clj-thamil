@@ -1,6 +1,5 @@
 (ns clj-thamil.format.analysis
   (:require [clojure.java.io :as jio]
-            [clojure.data.csv :as csv]
             [clojure.string :as string]
             [clj-thamil.format :as fmt])
   (:gen-class))
@@ -46,11 +45,9 @@
   (let [print-grid (fn [grid] (doseq [row grid] (println (string/join "\t" row))))]
     (println "the letter grid's frequencies:")
     (println "")
-    ;; (csv/write-csv *out* freq-grid :separator \tab :quote? false)
     (print-grid freq-grid)
     (println "")
     (println "the letter grid used:")
-    ;; (csv/write-csv *out* letter-grid :separator \tab :quote? false)
     (print-grid letter-grid)))
 
 (defn print-consonant-row-sums
