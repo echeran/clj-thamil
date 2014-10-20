@@ -1,4 +1,4 @@
-# clj-thamil-test
+# clj-thamil
 
 clj-thamil is a Clojure library designed to be a multi-purpose library for Thamil
 computing.
