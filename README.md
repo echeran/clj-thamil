@@ -18,6 +18,15 @@ Currently, it can support the following:
     case suffixes
 * perform a letter frequency analysis on input Thamil text
 
+For examples of programming in Thamil (natural language), see:
+* `test/cljx/clj_thamil/demo/core_test.cljx` - a gradual
+replacement of English into Thamil
+* `test/cljx/clj_thamil/demo/trans_demo_01.cljx` - just about entirely
+  in Thamil.  Demonstrates squaring numbers differently.
+* `src/cljx/clj_thamil/மொழியியல்.cljx`- just about
+entirely in Thamil.  Contains functions for basic grammar in Thamil
+(making plurals, adding suffixes, adding noun case suffixes)
+
 ## Usage
 
 Compile the source into Clojure and ClojureScript sources using the
