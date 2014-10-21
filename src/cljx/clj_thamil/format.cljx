@@ -407,6 +407,19 @@
   [s]
   (str->elems phoneme-trie s))
 
+;; TODO: create a make-inverse-trie fn
+;; TODO: turn str->elem into seq->elem, use that to refactor phonemes->str
+
+(defn phonemes->str
+  "given a seq of phonemes, create a string where the phonemes are combined into their proper letters"
+  [phoneme-seq]
+  (let [concat-phoneme-str (apply str phoneme-seq)
+        inverse-concat-phoneme-map (into {} (for [[k v] inverse-phoneme-map]
+                                              [(apply str k) v]))
+        inverse-concat-phoneme-trie (make-trie inverse-concat-phoneme-map)
+        combined-phoneme-str (apply str (str->elems inverse-concat-phoneme-trie concat-phoneme-str))]
+    combined-phoneme-str))
+
 ;;;;;;;;;;;;;;
 ;; sorting fns
 ;;;;;;;;;;;;;; 

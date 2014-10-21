@@ -57,7 +57,11 @@
           (is (= ["க்"] (str->phonemes "க்")))
           (is (= ["க்" "அ"] (str->phonemes "க")))
           (is (= ["க்" "ஊ"] (str->phonemes "கூ")))
-          (is (= ["வ்" "இ" "ட்" "உ" "த்" "அ" "ல்" "ஐ"] (str->phonemes "விடுதலை"))))))))
+          (is (= ["வ்" "இ" "ட்" "உ" "த்" "அ" "ல்" "ஐ"] (str->phonemes "விடுதலை")))))
+      (testing "inverting maps for creating tries for inverse conversion"
+        (is (= "பக்கம்" (phonemes->str "ப்அக்க்அம்")))
+        (is (= "தலைய்123ஈடு" (phonemes->str "த்அல்ஐய்123ஈட்உ")))
+        (is (= "நடு" (phonemes->str "ந்அடு")))))))
 
 (deftest word-letter-test
   (testing "splitting strings of தமிழ் characters into constituent தமிழ் characters"
