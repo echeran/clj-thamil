@@ -89,7 +89,7 @@
                seq வரிசை
                dorun செய்யோட்டம்
                doall செய்யெல்லாம்
-               str சரம்
+               str தொடை
                interpose இடைபொருத்து
                find கண்டுபிடி
                get பெறு
