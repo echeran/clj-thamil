@@ -1,6 +1,7 @@
 (ns clj-thamil.format.convert
   (:require [clojure.set :as set]
-            [clj-thamil.format :as fmt]))
+            [clj-thamil.format :as fmt])
+  (:gen-class))
 
 ;; A general note about the conversion and transliteration schemes
 ;; defined by the maps in this namespace:
@@ -103,3 +104,6 @@
        (fmt/str->elems தமிழ்-romanized-phoneme-trie)
        (apply str)))
 
+(defn -main
+  "generates the output necessary for a Mac OS X 10.x keyboard input plugin"
+  [& args])

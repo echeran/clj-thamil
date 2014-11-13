@@ -15,9 +15,11 @@
 
   :plugins [[lein-cljsbuild "1.0.3"]]
 
-  :aot [clj-thamil.format.analysis]
+  :aot [clj-thamil.main
+        clj-thamil.format.analysis
+        clj-thamil.format.convert]
 
-  :main clj-thamil.format.analysis
+  :main clj-thamil.main
 
   :cljx {:builds [{:source-paths ["src/cljx"]
                    :output-path "target/generated/src/clj"
