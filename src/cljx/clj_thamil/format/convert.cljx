@@ -34,15 +34,20 @@
 
    "a" "அ"
    "aa" "ஆ"
+   "A" "ஆ"
    "i" "இ"
    "ii" "ஈ"
+   "I" "ஈ"
    "u" "உ"
    "uu" "ஊ"
+   "U" "ஊ"
    "e" "எ"
    "ee" "ஏ"
+   "E" "ஏ"
    "ai" "ஐ"
    "o" "ஒ"
    "oo" "ஓ"
+   "O" "ஓ"
    "au" "ஔ"
    "q" "ஃ"
    "k" "க்"
@@ -64,19 +69,22 @@
    "R" "ற்"
    "n" "ன்"})
 
+(def ^{:doc "designates specific transliterations of phonemes / phoneme clusters in the தமிழ்->English direction (ex: resolving situations where multiple English sequences map to a single தமிழ் phoneme)"}
+  தமிழ்-romanized-phoneme-overrides
+  {"ஓ" "O" 
+   "ஏ" "E"
+   "க்" "k"
+   "ச்" "ch"
+   "ட்" "t"
+   "ந்" "n"
+   "ப்" "p"
+   "ழ்" "zh"
+   "ங்க்" "ng"})
+
 (def ^{:doc "an inverse of romanized-தமிழ்-phoneme-map, but with a few manual mappings for certain தமிழ் letters that can be input in multiple ways (or whose transliteration into English should be different then how it is input via English)"}
   தமிழ்-romanized-phoneme-map
-  (-> (set/map-invert romanized-தமிழ்-map)
-      (assoc
-          "ஓ" "O" 
-          "ஏ" "E"
-          "க்" "k"
-          "ச்" "ch"
-          "ட்" "t"
-          "ந்" "n"
-          "ப்" "p"
-          "ழ்" "zh"
-          "ங்க்" "ng")))
+  (merge (set/map-invert romanized-தமிழ்-phoneme-map)
+         தமிழ்-romanized-phoneme-overrides))
 
 (def romanized-தமிழ்-phoneme-trie (fmt/make-trie romanized-தமிழ்-phoneme-map))
 
