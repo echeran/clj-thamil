@@ -104,6 +104,47 @@
        (fmt/str->elems தமிழ்-romanized-phoneme-trie)
        (apply str)))
 
+(def ^{:doc "version of the Mac OS X input method (keyboard) plugin"}
+  OSX-INPUT-METHOD-VER "1.0")
+
 (defn -main
-  "generates the output necessary for a Mac OS X 10.x keyboard input plugin"
-  [& args])
+  "generates the output necessary for a Mac OS X 10.x input method (keyboard) plugin"
+  [& args]
+  (let [vowels (remove #(= % "ஃ") fmt/vowels)
+        phon-kv-parts-by-vowel (group-by
+                                #(boolean (some #{(second %)} vowels))
+                                romanized-தமிழ்-phoneme-map)
+        ஃ-map {"q" "ஃ"}
+        vowel-map (into {} (get phon-kv-parts-by-vowel true))
+        cons-map (into {} (get phon-kv-parts-by-vowel false))
+        cv-map (into {} (for [[eng-c tha-c] cons-map
+                              [eng-v tha-v] vowel-map]
+                          [(str eng-c eng-v) (fmt/phonemes->str [tha-c tha-v])]))
+        letters-map (merge ஃ-map vowel-map cons-map cv-map)
+        letters-lines (map #(str (first %) " " (second %)) letters-map)
+        input-chars-str (->> letters-map
+                             keys
+                             (map seq)
+                             (apply concat)
+                             distinct
+                             (apply str))
+        max-input-code (->> letters-map
+                            keys
+                            (map count)
+                            (apply max))
+        lines1 ["METHOD: TABLE"
+                "ENCODE: Unicode"
+                "PROMPT: கலை"
+                "DELIMITER ,"
+                (str "VERSION " OSX-INPUT-METHOD-VER)
+                (str "MAXINPUTCODE " max-input-code)
+                (str "VALIDINPUTKEY " input-chars-str)
+                "BEGINCHARACTER"
+                ""]
+        lines2 [""
+                "ENDCHARACTER"]
+        all-lines (concat lines1 letters-lines lines2)]
+    (dorun (map println all-lines))
+
+    ;; (println "hello")
+    ))
