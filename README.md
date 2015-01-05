@@ -13,7 +13,12 @@ Currently, it can support the following:
 * programming in Clojure (programming language) in Thamil (natural language)
 * natural language processing for Thamil language text
   * split a string into Thamil letters (not characters) and phonemes
-  * convert a string between Thamil (Unicode format) and English-transliterated formats
+  * combine a sequence of Thamil phonemes back into a proper Thamil string
+  * convert a string between Thamil (Unicode format) and:
+    * English-transliterated formats
+    * TAB format
+    * TSCII format
+    * Bamini format
   * basic grammar functions - pluralize, add suffixes, and add noun
     case suffixes
 * perform a letter frequency analysis on input Thamil text
