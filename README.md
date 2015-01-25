@@ -14,11 +14,13 @@ Currently, it can support the following:
 * natural language processing for Thamil language text
   * split a string into Thamil letters (not characters) and phonemes
   * combine a sequence of Thamil phonemes back into a proper Thamil string
+  * sort letters, words, etc. by Thamil alphabetical order
   * convert a string between Thamil (Unicode format) and:
     * English-transliterated formats
     * TAB format
     * TSCII format
     * Bamini format
+    * Webulagam format
   * basic grammar functions - pluralize, add suffixes, and add noun
     case suffixes
 * perform a letter frequency analysis on input Thamil text
