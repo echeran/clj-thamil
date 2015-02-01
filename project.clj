@@ -50,11 +50,18 @@
                    :output-path "target/generated/test"
                    :rules :cljs}]}
 
-  :cljsbuild {:test-commands {"node" ["node" :node-runner "target/testable.js"]}
-              :builds [{:source-paths ["target/classes" "target/test-classes"]
-                        :compiler {:output-to "target/testable.js"
-                                   :optimizations :advanced
-                                   :pretty-print true}}]}
+  ;; :cljsbuild {:test-commands {"node" ["node" :node-runner "target/testable.js"]}
+  ;;             :builds [{:source-paths ["target/classes" "target/test-classes"]
+  ;;                       :compiler {:output-to "target/testable.js"
+  ;;                                  :optimizations :advanced
+  ;;                                  :pretty-print true}}]}
+  
+  :cljsbuild {:builds {:app {:source-paths ["target/generated/src/cljs"]
+                             :compiler {:output-to     "resources/public/js/clj-thamil.js"
+                                        :output-dir    "resources/public/js/out"
+                                        :externs       []
+                                        :optimizations :none
+                                        :pretty-print  true}}}}
   
   :hooks [cljx.hooks]
 
