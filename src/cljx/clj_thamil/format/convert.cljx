@@ -1,5 +1,6 @@
 (ns clj-thamil.format.convert
-  (:require [clojure.set :as set]
+  (:require [clojure.algo.generic.functor :as ftor]
+            [clojure.set :as set] 
             [clj-thamil.format :as fmt])
   (:gen-class))
 
@@ -357,26 +358,6 @@
    "ªù÷"]
   )
 
-(def தமிழ்-tab-map (zipmap fmt/letter-seq tab-letter-seq))
-
-(def tab-தமிழ்-map (set/map-invert தமிழ்-tab-map))
-
-(def தமிழ்-tab-trie (fmt/make-trie தமிழ்-tab-map))
-
-(def tab-தமிழ்-trie (fmt/make-trie tab-தமிழ்-map))
-
-(defn தமிழ்->tab
-  "convert தமிழ் text from unicode to TAB format"
-  [s]
-  (->> (fmt/str->elems தமிழ்-tab-trie s)
-       (apply str)))
-
-(defn tab->தமிழ்
-  "convert தமிழ் text from TAB to unicode format"
-  [s]
-  (->> (fmt/str->elems tab-தமிழ்-trie s)
-       (apply str)))
-
 ;;;;;;;;
 ;; தமிழ் <-> Bamini
 ;;;;;;;;
@@ -629,26 +610,6 @@
    "Ndh"
    "nds"])
 
-(def தமிழ்-bamini-map (zipmap fmt/letter-seq bamini-letter-seq))
-
-(def bamini-தமிழ்-map (set/map-invert தமிழ்-bamini-map))
-
-(def தமிழ்-bamini-trie (fmt/make-trie தமிழ்-bamini-map))
-
-(def bamini-தமிழ்-trie (fmt/make-trie bamini-தமிழ்-map))
-
-(defn தமிழ்->bamini
-  "convert தமிழ் text from unicode to Bamini format"
-  [s]
-  (->> (fmt/str->elems தமிழ்-bamini-trie s)
-       (apply str)))
-
-(defn bamini->தமிழ்
-  "convert தமிழ் text from Bamini to unicode format"
-  [s]
-  (->> (fmt/str->elems bamini-தமிழ்-trie s)
-       (apply str)))
-
 ;;;;;;;;
 ;; தமிழ் <-> TSCII
 ;;;;;;;;
@@ -899,27 +860,6 @@
    "¦É¡"
    "§É¡"
    "¦Éª"])
-
-(def தமிழ்-tscii-map (zipmap fmt/letter-seq tscii-letter-seq))
-
-(def tscii-தமிழ்-map (set/map-invert தமிழ்-tscii-map))
-
-(def தமிழ்-tscii-trie (fmt/make-trie தமிழ்-tscii-map))
-
-(def tscii-தமிழ்-trie (fmt/make-trie tscii-தமிழ்-map))
-
-(defn தமிழ்->tscii
-  "convert தமிழ் text from unicode to TSCII format"
-  [s]
-  (->> (fmt/str->elems தமிழ்-tscii-trie s)
-       (apply str)))
-
-(defn tscii->தமிழ்
-  "convert தமிழ் text from TSCII to unicode format"
-  [s]
-  (->> (fmt/str->elems tscii-தமிழ்-trie s)
-       (apply str)))
-
 
 ;;;;;;;;
 ;; தமிழ் <-> Webulagam
@@ -1174,25 +1114,69 @@
    "ndh"
    "bds"])
 
-(def தமிழ்-webulagam-map (zipmap fmt/letter-seq webulagam-letter-seq))
+;;;;;;;;
+;; all character sets togeter
+;;;;;;;;
 
-(def webulagam-தமிழ்-map (set/map-invert தமிழ்-webulagam-map))
+(defn fill-charset-map
+  [{:keys [letters] :as m}]
+  (let [from-unic-map (zipmap fmt/letter-seq letters)
+        to-unic-map (set/map-invert from-unic-map)
+        from-unic-trie (fmt/make-trie from-unic-map)
+        to-unic-trie (fmt/make-trie to-unic-map)
+        from-unic (fn [s]
+                  (->> (fmt/str->elems from-unic-trie s)
+                       (apply str)))
+        to-unic (fn [s]
+                    (->> (fmt/str->elems to-unic-trie s)
+                         (apply str)))]
+    {:to-unicode to-unic
+     :from-unicode from-unic}))
 
-(def தமிழ்-webulagam-trie (fmt/make-trie தமிழ்-webulagam-map))
+(def init-charsets {:tab {:letters tab-letter-seq}
+                    :bamini {:letters bamini-letter-seq}
+                    :tscii {:letters tscii-letter-seq}
+                    :webulagam {:letters webulagam-letter-seq}})
 
-(def webulagam-தமிழ்-trie (fmt/make-trie webulagam-தமிழ்-map))
+(def charsets (-> (ftor/fmap fill-charset-map init-charsets)
+                  (assoc :romanized {:to-unic romanized->தமிழ்
+                                     :from-unic தமிழ்->romanized})))
 
-(defn தமிழ்->webulagam
-  "convert தமிழ் text from unicode to Webulagam format"
-  [s]
-  (->> (fmt/str->elems தமிழ்-webulagam-trie s)
-       (apply str)))
+;;;;;;;;
+;; named fns for convert fns
+;;;;;;;;
 
-(defn webulagam->தமிழ்
-  "convert தமிழ் text from Webulagam to unicode format"
-  [s]
-  (->> (fmt/str->elems webulagam-தமிழ்-trie s)
-       (apply str)))
+;; TAB
+
+(def ^{:doc "convert தமிழ் text from unicode to TAB format"}
+  தமிழ்->tab (get-in charsets [:tab :from-unicode]))
+
+(def ^{:doc "convert தமிழ் text from TAB to unicode format"}
+  tab->தமிழ் (get-in charsets [:tab :to-unicode]))
+
+;; Bamini
+
+(def ^{:doc "convert தமிழ் text from unicode to Bamini format"}
+  தமிழ்->bamini (get-in charsets [:bamini :from-unicode]))
+
+(def ^{:doc "convert தமிழ் text from Bamini to unicode format"}
+  bamini->தமிழ் (get-in charsets [:bamini :to-unicode]))
+
+;; TSCII
+
+(def ^{:doc "convert தமிழ் text from unicode to TSCII format"}
+  தமிழ்->tscii (get-in charsets [:tscii :from-unicode]))
+
+(def ^{:doc "convert தமிழ் text from TSCII to unicode format"}
+  tscii->தமிழ் (get-in charsets [:tscii :to-unicode]))
+
+;; Webulagam
+
+(def ^{:doc "convert தமிழ் text from unicode to Webulagam format"}
+  தமிழ்->webulagam (get-in charsets [:webulagam :from-unicode]))
+
+(def ^{:doc "convert தமிழ் text from Webulagam to unicode format"}
+  webulagam->தமிழ் (get-in charsets [:webulagam :to-unicode]))
 
 ;;;;;;;;
 ;; main
