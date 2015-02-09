@@ -81,7 +81,10 @@
    "ந்" "n"
    "ப்" "p"
    "ழ்" "zh"
-   "ங்க்" "ng"})
+   "ங்க்" "ng"
+   "ஆ" "aa"
+   "ஈ" "ii"
+   "ஊ" "uu"})
 
 (def ^{:doc "an inverse of romanized-தமிழ்-phoneme-map, but with a few manual mappings for certain தமிழ் letters that can be input in multiple ways (or whose transliteration into English should be different then how it is input via English)"}
   தமிழ்-romanized-phoneme-map
