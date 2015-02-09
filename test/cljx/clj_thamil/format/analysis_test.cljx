@@ -1,4 +1,4 @@
-(ns clj-thamil.format.analys-test
+(ns clj-thamil.format.analysis-test
   (:require [clj-thamil.format :as fmt])
   (:use clj-thamil.format.analysis 
         clojure.test))
