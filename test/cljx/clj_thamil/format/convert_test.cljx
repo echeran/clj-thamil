@@ -11,6 +11,8 @@
 
 (def QCHK-SIZE 100)
 
+(def A_LOT 100)
+
 (deftest conversion-test
   (testing "romanized -> தமிழ்"
     (is (= "தமிழ்" (romanized->தமிழ் "thamiz")))
@@ -53,10 +55,14 @@
                                                                  (= "ள்" c)))
                                         ambig2 (fn [[a b]] (and (= "ஒ" a)
                                                                (= "ள்" b)))
+                                        ambig3 (fn [[a b c]] (and (மொ/மெய்யெழுத்தா? a)
+                                                                 (#{"எ" "ஏ" "ஆ"} b)
+                                                                 (= "ர்" c)))
                                         no-ambig1 (every? false? (map ambig1 phoneme-triples))
-                                        no-ambig2 (every? false? (map ambig2 phoneme-doubles))]
-                                    (and no-ambig1 no-ambig2)))
-        non-romanized-thamil-text-gen (gen/such-that old-font-no-ambig-combo thamil-text-gen)
+                                        no-ambig2 (every? false? (map ambig2 phoneme-doubles))
+                                        no-ambig3 (every? false? (map ambig3 phoneme-doubles))]
+                                    (and no-ambig1 no-ambig2 no-ambig3)))
+        non-romanized-thamil-text-gen (gen/such-that old-font-no-ambig-combo lett-gen (* QCHK-SIZE A_LOT))
         test-prop (fn [fn inv] (prop/for-all [t non-romanized-thamil-text-gen]
                                             (= t (-> t fn inv))))
         test-res (fn [fn inv]
