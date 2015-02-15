@@ -31,8 +31,10 @@
     (is (not= "neer" (தமிழ்->romanized "நீர்")))
     (is (= "paambu" (தமிழ்->romanized "பாம்பு")))
     (is (not= "paampu" (தமிழ்->romanized "பாம்பு")))
-    (is (= "anpu" (தமிழ்->romanized "அன்பு")))
-    (is (not= "anbu" (தமிழ்->romanized "அன்பு")))))
+    (is (not= "anpu" (தமிழ்->romanized "அன்பு")))
+    (is (= "anbu" (தமிழ்->romanized "அன்பு")))
+    (is (not= "panpu" (தமிழ்->romanized "பண்பு")))
+    (is (= "panbu" (தமிழ்->romanized "பண்பு")))))
 
 (deftest double-check-test
   (testing "from the test.check / double-check Readme"
@@ -62,13 +64,20 @@
                                         no-ambig2 (every? false? (map ambig2 phoneme-doubles))
                                         no-ambig3 (every? false? (map ambig3 phoneme-doubles))]
                                     (and no-ambig1 no-ambig2 no-ambig3)))
+        ;; old fonts can't distinguish certain character combinations,
+        ;; so prevent test cases that could cause that
         non-romanized-thamil-text-gen (gen/such-that old-font-no-ambig-combo lett-gen (* QCHK-SIZE A_LOT))
+        ;; applying converters for old fonts followed by their
+        ;; inverses should give back the original text
         test-prop (fn [f inv] (prop/for-all [t non-romanized-thamil-text-gen]
                                             (= t (-> t f inv))))
         test-res (fn [f inv]
                    (->> (test-prop f inv)
                         (sc/quick-check QCHK-SIZE)
                         :result))
+        ;; only after we've transliterated to romanized can we use
+        ;; the rule about applying converter + inverse = input, since
+        ;; the தமிழ்->romanized direction has certain overrides
         romanized-test-prop (prop/for-all [t thamil-text-gen]
                                           (let [converted-test-txt (-> t cvt/தமிழ்->romanized cvt/romanized->தமிழ்)]
                                             (= converted-test-txt (-> converted-test-txt cvt/தமிழ்->romanized cvt/romanized->தமிழ்))))
