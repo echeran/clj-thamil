@@ -127,7 +127,7 @@
                  cond பொறுத்து
                  do செய்
                  
-                 ;; clojure.text
+                 ;; clojure.test
                  deftest வரையறு-பரிசோதனை
                  testing பரிசோதிக்கும்
                  is ஆகும்

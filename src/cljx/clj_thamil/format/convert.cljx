@@ -21,7 +21,7 @@
 ;; தமிழ் <-> Romanized
 ;;;;;;;;
 
-(def ^{:doc "a map of English strings to theier தமிழ் phonemes (and consonant clusters)."}
+(def ^{:doc "a map of English strings to their தமிழ் phonemes (and consonant clusters)."}
   romanized-தமிழ்-phoneme-map
   {"g" "க்"
    "s" "ச்"

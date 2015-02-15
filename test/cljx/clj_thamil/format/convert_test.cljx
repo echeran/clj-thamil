@@ -63,10 +63,10 @@
                                         no-ambig3 (every? false? (map ambig3 phoneme-doubles))]
                                     (and no-ambig1 no-ambig2 no-ambig3)))
         non-romanized-thamil-text-gen (gen/such-that old-font-no-ambig-combo lett-gen (* QCHK-SIZE A_LOT))
-        test-prop (fn [fn inv] (prop/for-all [t non-romanized-thamil-text-gen]
-                                            (= t (-> t fn inv))))
-        test-res (fn [fn inv]
-                   (->> (test-prop fn inv)
+        test-prop (fn [f inv] (prop/for-all [t non-romanized-thamil-text-gen]
+                                            (= t (-> t f inv))))
+        test-res (fn [f inv]
+                   (->> (test-prop f inv)
                         (sc/quick-check QCHK-SIZE)
                         :result))
         romanized-test-prop (prop/for-all [t thamil-text-gen]
