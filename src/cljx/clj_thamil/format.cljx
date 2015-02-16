@@ -453,8 +453,7 @@
           (not= (first s1) (first s2)) (letter-before? (first s1) (first s2))
           :else (recur (rest s1) (rest s2)))))
 
-(def ^{:private true
-       :doc "a comparator for lexicographical comparisons of arbitrary strings (consisting of தமிழ் letters and letters from 1-to-1 encodings)"}
+(def ^{:doc "a comparator for lexicographical comparisons of arbitrary strings (consisting of தமிழ் letters and letters from 1-to-1 encodings)"}
   word-comp (comparator word-before?))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

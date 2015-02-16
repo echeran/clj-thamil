@@ -26,6 +26,7 @@
   :plugins [[lein-cljsbuild "1.0.3"]]
 
   :aot [clj-thamil.main
+        clj-thamil.java.api.format
         clj-thamil.format.analysis
         clj-thamil.format.convert]
 
