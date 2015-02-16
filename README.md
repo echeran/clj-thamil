@@ -34,18 +34,44 @@ replacement of English into Thamil
 entirely in Thamil.  Contains functions for basic grammar in Thamil
 (making plurals, adding suffixes, adding noun case suffixes)
 
-## Usage
+## Building
 
-Compile the source into Clojure and ClojureScript sources using the
-command `lein cljx`.  This is all that you need to do to use the
-Clojure code in other Clojure projects.
+Compile the source into separate Clojure and ClojureScript sources using the
+command `lein cljx`. 
 
 Compile the source into an executable JAR file (runnable on the JVM,
 based on Clojure sources) using the command `lein uberjar`.  This is
-all you need to do to run the library as a standalone process.
+all you need to do to run one of the standalone processes or
+create a jar artifact.  `lein install` will install the artifact and
+pom.xml into your local Maven cache.
+
+## Usage
+
+### Examples
+
+#### Java Examples
+
+The Java example code is in the Maven project in this repostiory at
+[`examples/java/java-examples`](examples/java/java-examples/README.md).
+See that page for instructions and building and running.
+
+### Command-line process
 
 Currently, the only standalone process supported by the library is the
-letter frequency analysis in the namespace `clj-thamil.format.analysis`.
+letter frequency analysis in the namespace
+`clj-thamil.format.analysis`.
+
+The frequency analysis program can be
+run after building the uberjar by
+```
+cat input | java -jar <uberjar> freqs > output
+```
+where `<uberjar>` will be called something like
+`clj-thamil-0.1.2-standalone.jar`.   The frequency analysis program
+takes input from the standard input stream and outputs to the standard
+output stream.
+
+## Editing
 
 For programming in Thamil, if using a computer running Mac OS X, use
 the Aquamacs program (a Mac OS X-friendly version of Emacs) to ensure that support for Thamil letters works

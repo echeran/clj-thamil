@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased][unreleased]
 ### Added
 - Generative testing for font conversion functions
+- Java examples using clj-thamil jar artifact
+- Doc for clj-thamil and Java examples
 
 ### Changed
 - Font conversion information represented as map instead of seq

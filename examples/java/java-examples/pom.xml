@@ -4,7 +4,7 @@
   <groupId>clj-thamil</groupId>
   <artifactId>java-examples</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <name>java-examples</name>
   <url>https://github.com/echeran/clj-thamil-examples</url>
   <repositories>
