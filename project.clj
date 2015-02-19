@@ -25,7 +25,7 @@
   :resource-paths ["target/generated/src"]
   :test-paths ["target/generated/test"]
 
-  :plugins [[lein-cljsbuild "1.0.3"]]
+  :plugins [[lein-cljsbuild "1.0.4"]]
 
   :aot [clj-thamil.main
         clj-thamil.java.api.format
@@ -75,4 +75,4 @@
                    :aliases {"cleantest" ["do" "clean," "cljx" "once," "test,"
                                           "cljsbuild" "test"]
                              "deploy" ["do" "clean" ["cljx" "once"] ["deploy" "clojars"]]}}
-             :provided {:dependencies [[org.clojure/clojurescript "0.0-2234"]]}})
+             :provided {:dependencies [[org.clojure/clojurescript "0.0-2850"]]}})
