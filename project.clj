@@ -1,4 +1,4 @@
-(defproject clj-thamil "0.1.2"
+(defproject clj-thamil "0.2.0-SNAPSHOT"
   :description "A project encompassing various Thamil language-specific computing ideas"
   :url "https://github.com/echeran/clj-thamil"
   :license {:name "Eclipse Public License"
