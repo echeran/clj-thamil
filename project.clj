@@ -5,18 +5,20 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :scm {:name "git"
         :url "https://github.com/echeran/clj-thamil"}
+  :repositories [["releases" {:url "https://clojars.org/repo/"}]]
+  :deploy-repositories [["clojars" {:creds :gpg}]]
+  :pom-addition [:developers [:developer
+                               [:name "Elango Cheran"]
+                               [:url "http://www.elangocheran.com"]
+                               [:email "elango.cheran@gmail.com"]
+                               [:timezone "-8"]]] 
+
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/data.csv "0.1.2"]
                  [org.clojure/algo.generic "0.1.2"]
                  [com.cemerick/double-check "0.6.1"]]
   ;; this config seems to work with clojure 1.5.1 but may not 1.6.0
   ;; (if not, then I don't know why)
-
-  :repositories [["releases" {:url "https://clojars.org/repo/"
-                              ;; :sign-releases false
-                              }]]
-  :deploy-repositories [["clojars" {:creds :gpg}]]
-
   
   :jar-exclusions [#"\.cljx|\.swp|\.swo|\.DS_Store"]
   :source-paths ["src" "target/generated/src"]
