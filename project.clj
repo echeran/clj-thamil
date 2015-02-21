@@ -21,9 +21,9 @@
   ;; (if not, then I don't know why)
   
   :jar-exclusions [#"\.cljx|\.swp|\.swo|\.DS_Store"]
-  :source-paths ["src" "target/generated/src"]
-  :resource-paths ["target/generated/src"]
-  :test-paths ["target/generated/test"]
+  :source-paths ["src" "target/generated/src/clj"]
+  :resource-paths ["target/generated/src/clj"]
+  :test-paths ["target/generated/test/clj"]
 
   :plugins [[lein-cljsbuild "1.0.4"]]
 
@@ -35,19 +35,19 @@
   :main clj-thamil.main
 
   :cljx {:builds [{:source-paths ["src/cljx"]
-                   :output-path "target/generated/src"
+                   :output-path "target/generated/src/clj"
                    :rules :clj}
 
                   {:source-paths ["src/cljx"]
-                   :output-path "target/generated/src"
+                   :output-path "target/generated/src/cljs"
                    :rules :cljs}
                   
                   {:source-paths ["test/cljx"]
-                   :output-path "target/generated/test"
+                   :output-path "target/generated/test/clj"
                    :rules :clj}
 
                   {:source-paths ["test/cljx"]
-                   :output-path "target/generated/test"
+                   :output-path "target/generated/test/cljs"
                    :rules :cljs}]}
 
   ;; :cljsbuild {:test-commands {"node" ["node" :node-runner "target/testable.js"]}
