@@ -1,6 +1,9 @@
 (ns clj-thamil.மொழியியல்
   (:require [clj-thamil.format :as fmt])
-  (:use clj-thamil.core))
+  #+clj (:use clj-thamil.core)
+  #+cljs (:use-macros [clj-thamil.core :only [வரையறு விவரி மீதி வரையறு-செயல்கூறு பெறு எதாவது பூலியன் என்னும்போது
+                                               வைத்துக்கொள் கடைசி பொறுத்து எண்ணு முதல் இரண்டாம் தொடை
+                                               கடைசியின்றி அன்று மற்றும் அல்லது தொடு செயல்படுத்து செயல்கூறு]]))
 
 
 (வரையறு மெய்-தொடக்கம்-எழுத்துகள் fmt/c-cv-letters)

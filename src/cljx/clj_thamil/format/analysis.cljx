@@ -1,8 +1,8 @@
 (ns clj-thamil.format.analysis
-  (:require [clojure.java.io :as jio]
+  (:require #+clj [clojure.java.io :as jio]
             [clojure.string :as string]
             [clj-thamil.format :as fmt])
-  (:gen-class))
+  #+clj (:gen-class))
 
 (def letters-plus-grantha
   (concat fmt/letters 
@@ -97,6 +97,7 @@
 ;; main fn
 ;;
 
+#+clj
 (defn -main
   [& args]
   (with-open [rdr (jio/reader *in*)]

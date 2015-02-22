@@ -1,6 +1,6 @@
 (ns clj-thamil.format
   (:require [clojure.set :as set])
-  (:use clj-thamil.core))
+  #+clj (:use clj-thamil.core))
 
 ;;;;;;;;;;
 ;; letters
@@ -465,7 +465,8 @@
   "returns whether a Java Character a.k.a. Unicode codepoint is whitespace or not (according to Java's understanding of Unicode)"
   [ch]
   (when ch
-    (Character/isWhitespace ch)))
+    #+clj (Character/isWhitespace ch)
+    #+cljs (boolean (re-seq #"\s" (str ch)))))
 
 (defn wordy-char?
   "take a Java Character a.k.a. Unicode codepoint and return whether it represents a character that might go into a word or identifier.  In other words, it is for Unicode like what \\w has representing in regular expressions for ASCII characters -- which is alpha-numeric characters"
@@ -473,7 +474,8 @@
   (when ch
     (and
      (not (get #{\$ \_} ch))
-     (Character/isJavaIdentifierPart ch))))
+     #+clj (Character/isJavaIdentifierPart ch)
+     #+cljs (not (whitespace? (str ch))))))
 
 ;; TODO: DRY on seq-prefix & seq-prefix? -- is there a Clojure implementation?
 

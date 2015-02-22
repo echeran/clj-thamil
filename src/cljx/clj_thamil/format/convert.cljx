@@ -1,8 +1,8 @@
 (ns clj-thamil.format.convert
-  (:require [clojure.algo.generic.functor :as ftor]
+  (:require ;; [clojure.algo.generic.functor :as ftor]
             [clojure.set :as set] 
             [clj-thamil.format :as fmt])
-  (:gen-class))
+  #+clj (:gen-class))
 
 ;; A general note about the conversion and transliteration schemes
 ;; defined by the maps in this namespace:
@@ -1146,7 +1146,16 @@
                     :tscii {:from-unic-map tscii-map}
                     :webulagam {:from-unic-map webulagam-map}})
 
-(def charsets (-> (ftor/fmap fill-charset-map init-charsets)
+(defn mmap-vals
+  "given a map and a fn, map the fn over the maps vals keeping keys same"
+  [f m]
+  (letfn [(reduce-fn [curr-map kv]
+            (assoc curr-map (first kv) (f (second kv))))]
+    (reduce reduce-fn {} m)))
+
+(def charsets (-> (mmap-vals fill-charset-map init-charsets)
+                  ;; (ftor/fmap fill-charset-map init-charsets)
+                  ;;(reduce-kv #(%1 %2 (fill-charset-map %3)) {} init-charsets)
                   (assoc :romanized {:to-unic romanized->தமிழ்
                                      :from-unic தமிழ்->romanized})))
 
