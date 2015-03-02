@@ -35,28 +35,19 @@ public class WordSort01 {
         Comparator wordComp = (Comparator) (deref.invoke(wordCompVar));
 
         List<String> strs = Arrays.asList(
-                                          // "மடம்",
-                                          // "மட்டம்",
-                                          // "மட்டும்",
-                                          // "மடக்கு",
-                                          // "முடக்கு",
-                                          // "முடுக்கு",
-                                          // "படம்",
-                                          // "குடம்",
-                                          // "தடம்",
-                                          // "தடி",
-                                          // "திட்டம்"
-                                          "\u0bae\u0b9f\u0bae\u0bcd",
-                                          "\u0bae\u0b9f\u0bcd\u0b9f\u0bae\u0bcd",
-                                          "\u0bae\u0b9f\u0bcd\u0b9f\u0bc1\u0bae\u0bcd",
-                                          "\u0bae\u0b9f\u0b95\u0bcd\u0b95\u0bc1",
-                                          "\u0bae\u0bc1\u0b9f\u0b95\u0bcd\u0b95\u0bc1",
-                                          "\u0bae\u0bc1\u0b9f\u0bc1\u0b95\u0bcd\u0b95\u0bc1",
-                                          "\u0baa\u0b9f\u0bae\u0bcd",
-                                          "\u0b95\u0bc1\u0b9f\u0bae\u0bcd",
-                                          "\u0ba4\u0b9f\u0bae\u0bcd",
-                                          "\u0ba4\u0b9f\u0bbf",
-                                          "\u0ba4\u0bbf\u0b9f\u0bcd\u0b9f\u0bae\u0bcd"
+                                          
+                                          "மடம்",
+                                          "மட்டம்",
+                                          "மட்டும்",
+                                          "மடக்கு",
+                                          "முடக்கு",
+                                          "முடுக்கு",
+                                          "படம்",
+                                          "குடம்",
+                                          "தடம்",
+                                          "தடி",
+                                          "திட்டம்"
+                                          
                                           );
         List<String> strs2 = new ArrayList<String>();
         strs2.addAll(strs);
