@@ -61,7 +61,10 @@
                                         :output-dir    "resources/public/js/out"
                                         :externs       []
                                         :optimizations :none
-                                        :pretty-print  true}}}}
+                                        :pretty-print  true}}}
+              :test-commands {
+                              ;; no cljs test configured yet
+                              }}
   
   :hooks [cljx.hooks]
 
