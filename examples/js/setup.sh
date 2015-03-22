@@ -1,8 +1,8 @@
 #!/bin/sh
 
-mkdir -p test01/js
+mkdir -p js
 lein do clean, cljx once, cljsbuild once
-#cp -r ../../resources/public/js/clj-thamil.js ./test01/js
-#cp -r ../../resources/public/js/out/* ./test01/js
-rsync --recursive ../../resources/public/js/clj-thamil.js ./test01/js
-rsync --recursive ../../resources/public/js/out/ ./test01/js
+#cp -r ../../resources/public/js/clj-thamil.js ./js
+#cp -r ../../resources/public/js/out/* ./js
+rsync --recursive ../../resources/public/js/clj-thamil.js ./js
+rsync --recursive ../../resources/public/js/out/ ./js
