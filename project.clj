@@ -66,7 +66,7 @@
                               ;; no cljs test configured yet
                               }}
   
-  :hooks [cljx.hooks]
+  :prep-tasks [["cljx" "once"] "javac" "compile"]
 
   :aliases {"test-cljs" ["do" ["cljx" "once"] ["cljsbuild" "test"]]
             "test-all"  ["do" ["with-profile" "default:+1.6" "test"] ["cljsbuild" "test"]]}
@@ -74,7 +74,7 @@
   :lein-release {:deploy-via :shell
                  :shell ["lein" "deploy"]}
 
-  :profiles {:dev {:plugins [[com.keminglabs/cljx "0.4.0"]]
+  :profiles {:dev {:plugins [[com.keminglabs/cljx "0.6.0"]]
                    :aliases {"cleantest" ["do" "clean," "cljx" "once," "test,"
                                           "cljsbuild" "test"]
                              "deploy" ["do" "clean" ["cljx" "once"] ["deploy" "clojars"]]}}
