@@ -82,6 +82,10 @@ MELPA/ELPA repository, and replace it with the file
 `clojure-mode.el` file in the Aquamacs package repository into
 Aquamacs, and run the command `M-x emacs-lisp-byte-compile-and-load`. 
 
+## Mailing List
+
+Join the [clj-thamil mailing list](https://groups.google.com/forum/#!forum/clj-thamil) to post questions and receive announcements.
+
 ## License
 
 Distributed under the Eclipse Public License, the same as Clojure.
