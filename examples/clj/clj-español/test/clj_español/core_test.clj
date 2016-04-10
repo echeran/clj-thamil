@@ -2,6 +2,7 @@
   (:require [clojure.test :refer :all]
             [clj-español.core :refer :all]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(deftest core-test
+  (let [numbers [2 3 5 7 11]]
+    (testing "Clojure en español"
+      (is (= 11 (último numbers))))))
