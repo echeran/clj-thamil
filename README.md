@@ -26,18 +26,19 @@ Currently, it can support the following:
 * perform a letter frequency analysis on input Thamil text
 
 For examples of programming in Thamil (natural language), see:
-* `test/cljx/clj_thamil/demo/core_test.cljx` - a gradual
+* `test/clj_thamil/demo/core_test.clj` - a gradual
 replacement of English into Thamil
-* `test/cljx/clj_thamil/demo/trans_demo_01.cljx` - just about entirely
+* `test/clj_thamil/demo/trans_demo_01.cljc` - just about entirely
   in Thamil.  Demonstrates squaring numbers differently.
-* `src/cljx/clj_thamil/மொழியியல்.cljx`- just about
+* `src/clj_thamil/மொழியியல்.cljc`- just about
 entirely in Thamil.  Contains functions for basic grammar in Thamil
 (making plurals, adding suffixes, adding noun case suffixes)
 
 ## Building
 
-Compile the source into separate Clojure and ClojureScript sources using the
-command `lein cljx`. 
+For both Clojure and ClojureScript, compiling, testing, and starting a
+REPL can be done with the usual Leiningen commands `lein compile`,
+`lein test`, and `lein repl`.
 
 Compile the source into an executable JAR file (runnable on the JVM,
 based on Clojure sources) using the command `lein uberjar`.  This is

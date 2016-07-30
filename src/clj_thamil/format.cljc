@@ -1,6 +1,6 @@
 (ns clj-thamil.format
   (:require [clojure.set :as set])
-  #+clj (:use clj-thamil.core))
+  #?(:clj (:use clj-thamil.core)))
 
 ;;;;;;;;;;
 ;; letters
@@ -465,8 +465,8 @@
   "returns whether a Java Character a.k.a. Unicode codepoint is whitespace or not (according to Java's understanding of Unicode)"
   [ch]
   (when ch
-    #+clj (Character/isWhitespace ch)
-    #+cljs (boolean (re-seq #"\s" (str ch)))))
+    #?(:clj (Character/isWhitespace ch)
+       :cljs (boolean (re-seq #"\s" (str ch))))))
 
 (defn wordy-char?
   "take a Java Character a.k.a. Unicode codepoint and return whether it represents a character that might go into a word or identifier.  In other words, it is for Unicode like what \\w has representing in regular expressions for ASCII characters -- which is alpha-numeric characters"
@@ -474,8 +474,8 @@
   (when ch
     (and
      (not (get #{\$ \_} ch))
-     #+clj (Character/isJavaIdentifierPart ch)
-     #+cljs (not (whitespace? (str ch))))))
+     #?(:clj (Character/isJavaIdentifierPart ch)
+        :cljs (not (whitespace? (str ch)))))))
 
 ;; TODO: DRY on seq-prefix & seq-prefix? -- is there a Clojure implementation?
 
@@ -534,9 +534,9 @@
 
 (def ^{:doc "a wrapper around the native fn call that gives the index of the first occurrence of a particular substring"}
   index-of
-  #+cljs seq-index-of 
-  #+clj (fn [tgt qry]
-            (.indexOf tgt qry)))
+  #?(:cljs seq-index-of 
+     :clj (fn [tgt qry]
+             (.indexOf tgt qry))))
 
 (defn wordy-seq
   "take a string and produce a seq of the Unicode-aware version of the \\w+ regex pattern - basically, split input string into all chunks of non-whitepsace.  Originally, I called this fn word-seq, but that is not true for all languages and/or throughout time where there was no spearation between words (ex: Thai, Chinese, Japanese, Latin manuscripts, ancient Thamil stone inscriptions, etc.)"

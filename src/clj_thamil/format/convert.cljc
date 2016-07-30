@@ -2,7 +2,7 @@
   (:require ;; [clojure.algo.generic.functor :as ftor]
             [clojure.set :as set] 
             [clj-thamil.format :as fmt])
-  #+clj (:gen-class))
+  #?(:clj (:gen-class)))
 
 ;; A general note about the conversion and transliteration schemes
 ;; defined by the maps in this namespace:
