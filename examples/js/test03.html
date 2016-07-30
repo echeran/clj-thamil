@@ -1,0 +1,69 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <script charset="utf-8" type="text/javascript" src="js/goog/base.js"></script>
+    <script charset="utf-8" type="text/javascript" src="js/clj-thamil.js"></script>
+
+    <script charset="utf-8" type="text/javascript" src="js/clojure/string.js"></script>
+    <script charset="utf-8" type="text/javascript" src="js/cljs/core.js"></script>
+
+    <script charset="utf-8" type="text/javascript" src="js/clj_thamil/core.js"></script>
+    <script charset="utf-8" type="text/javascript" src="js/clojure/set.js"></script>
+    <script charset="utf-8" type="text/javascript" src="js/clj_thamil/format.js"></script>
+    <script charset="utf-8" type="text/javascript" src="js/clj_thamil/format/convert.js"></script>
+    <script charset="utf-8" type="text/javascript" src="js/clj_thamil/js/api/convert.js"></script>
+    <script charset="utf-8" type="text/javascript" src="js/clj_thamil/js/api/format.js"></script>
+
+    <script type="text/javascript">
+    function insertText(name, text) { var elem = document.getElementById(name); elem.value += text; }
+    function setText(name, text) { var elem = document.getElementById(name); elem.value = text; }
+    function clearContents(element) { element.value = ''; }
+    </script>
+
+    <table border="0">
+      <tr>
+        <th>Unsorted தமிழ் words (input)</th>
+        <th>Sorted தமிழ் words (output)</th>
+      </tr>
+      <tr>
+        <td>
+          <textarea rows="30" cols="50" id="unsorted">Type here... </textarea>
+        </td>
+        <td>
+          <textarea rows="30" cols="50" id="sorted" readonly>Output comes here automatically </textarea>
+        </td>
+      </tr>
+    </table>
+
+    <script type="text/javascript">
+      // alert(clj_thamil.js.api.convert.romanized_to_thamil("vaNakkam"));
+    </script>
+
+    <script type="text/javascript">
+
+      var u_elem = document.getElementById("unsorted");
+      var s_elem = document.getElementById("sorted");
+
+      var sort_thamil_words = function() {
+        var u_txt = u_elem.value;
+        var u_words = clojure.string.split_lines(u_txt);
+        var s_words = clj_thamil.js.api.format.thamil_sort(u_words);
+        var s_txt = clojure.string.join("\n", s_words);
+        s_elem.value = s_txt;
+      }
+
+      var txt_onchange = function() {
+        sort_thamil_words();
+      }
+   
+      u_elem.onkeyup = txt_onchange;
+      u_elem.onblur = txt_onchange;
+      s_elem.onkeyup = txt_onchange;
+      s_elem.onblur = txt_onchange;
+    
+    </script>
+
+  </body>
+</html>

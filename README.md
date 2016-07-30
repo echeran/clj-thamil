@@ -56,6 +56,19 @@ The Java example code is in the Maven project in this repostiory at
 [`examples/java/java-examples`](examples/java/java-examples/README.md).
 See that page for instructions and building and running.
 
+#### JavaScript Examples
+
+The Clojure/-Script code in clj-thamil must be compiled using the
+ClojureScript compiler into JavaScript before it can used in JS
+runtimes (ex: webpages).  In the JS exmaples directory
+[`examples/js`][(examples/js), first run `sh setup.sh`.  Then load the
+HTML files located in the same directory from within a browser that
+has JS enabled.
+
+* test01.html - transliteration of English into Thamil on a JS popup box 
+* test02.html - transliterates English into Thamil and splits Thamil into letter
+* test03.html - sorting Thamil words by Thamil alphabetical order
+
 ### Command-line process
 
 Currently, the only standalone process supported by the library is the

@@ -26,3 +26,8 @@ the class name of the example being run:
 java -cp target/java-examples-1.0.jar clj_thamil.examples.java.WordSort01
 java -cp target/java-examples-1.0.jar clj_thamil.examples.java.WordSort02
 ```
+
+## Overview
+
+* WordSort01 - sorts words based on Thamil alphabetical order
+* WordSort02 - sorts words based on Thamil alphabetical order
