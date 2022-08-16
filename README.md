@@ -69,21 +69,35 @@ has JS enabled.
 * test02.html - transliterates English into Thamil and splits Thamil into letter
 * test03.html - sorting Thamil words by Thamil alphabetical order
 
-### Command-line process
+### Command-line processes
 
-Currently, the only standalone process supported by the library is the
-letter frequency analysis in the namespace
-`clj-thamil.format.analysis`.
+#### Letter frequencies
 
-The frequency analysis program can be
-run after building the uberjar by
+The frequency analysis program (`freqs`) can be
+run by
 ```
-cat input | java -jar <uberjar> freqs > output
+cat input | lein run freqs > output
 ```
-where `<uberjar>` will be called something like
-`clj-thamil-0.1.2-standalone.jar`.   The frequency analysis program
+
+The frequency analysis program
 takes input from the standard input stream and outputs to the standard
 output stream.
+
+The code behind the letter frequency analysis can be found in the namespace
+`clj-thamil.format.analysis`.
+
+#### Phonemes
+
+The text to phoneme converter program (`phonemes`) can be run by
+```
+cat input | lein run phonemes > output
+```
+
+The phonemes program
+takes input from the standard input stream and outputs to the standard
+output stream.
+
+The code behind the phoneme conversion can be found in the namespaces `clj-thamil.subprograms` and `clj-thamil.format`.
 
 ## Editing
 
