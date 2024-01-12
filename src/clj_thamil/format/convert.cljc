@@ -527,8 +527,8 @@
    "ர்" "u;"
    "ர" "u"
    "ரா" "uh"
-   "ரி" "hp"
-   "ரீ" "hP"
+   "ரி" "up"
+   "ரீ" "uP"
    "ரு" "U"
    "ரூ" "&"
    "ரெ" "nu"
@@ -614,7 +614,69 @@
    "னை" "id"
    "னொ" "ndh"
    "னோ" "Ndh"
-   "னௌ" "nds"}) 
+   "னௌ" "nds"
+
+   "ஜ்" "[;"
+   "ஜ" "["
+   "ஜா" "[h"
+   "ஜி" "[p"
+   "ஜீ" "[P"
+   "ஜு" "[{"
+   "ஜூ" "[\""
+   "ஜெ" "n["
+   "ஜே" "N["
+   "ஜை" "i["
+   "ஜொ" "n[h"
+   "ஜோ" "N[h"
+   "ஜௌ" "n[s"
+
+   "ஷ்" "\\;"
+   "ஷ" "\\"
+   "ஷா" "\\h"
+   "ஷி" "\\p"
+   "ஷீ" "\\P"
+   "ஷு" "\\{"
+   "ஷூ" "\\\""
+   "ஷெ" "n\\"
+   "ஷே" "N\\"
+   "ஷை" "i\\"
+   "ஷொ" "n\\h"
+   "ஷோ" "N\\h"
+   "ஷௌ" "n\\s"
+
+   "ஸ்" "];"
+   "ஸ" "]"
+   "ஸா" "]h"
+   "ஸி" "]p"
+   "ஸீ" "]P"
+   "ஸு" "]{"
+   "ஸூ" "]\""
+   "ஸெ" "n]"
+   "ஸே" "N]"
+   "ஸை" "i]"
+   "ஸொ" "n]h"
+   "ஸோ" "N]h"
+   "ஸௌ" "n]s"
+
+   "ஹ்" "`;"
+   "ஹ" "`"
+   "ஹா" "`h"
+   "ஹி" "`p"
+   "ஹீ" "`P"
+   "ஹு" "`{"
+   "ஹூ" "`\""
+   "ஹெ" "n`"
+   "ஹே" "N`"
+   "ஹை" "i`"
+   "ஹொ" "n`h"
+   "ஹோ" "N`h"
+   "ஹௌ" "n`s"
+
+   "க்ஷ்" "~;"
+
+   "ஶ்ரீ" "="
+   
+   }) 
 
 ;;;;;;;;
 ;; தமிழ் <-> TSCII
@@ -1127,10 +1189,26 @@
 ;; all character sets togeter
 ;;;;;;;;
 
+(defn fill-in-bamini-to-unic-map
+  "Add in the entries in the bamini -> unicode conversion map
+  that represents the normal way that ர் ரி ரீ get written by hand"
+  [to-unic-map]
+  (let [;; c-with-அ-letters (map second fmt/c-cv-letters)
+        letters fmt/letters
+        entries (for [letter (flatten letters)
+                      r-letter ["ர்" "ரி" "ரீ"]]
+                  (let [new-val (str letter r-letter)
+                        new-key (str (get bamini-map letter)
+                                     (get {"ர்" "h;"
+                                           "ரி" "hp"
+                                           "ரீ" "hP"} r-letter))]
+                    [new-key new-val]))
+        extra-entries-map (into {} entries)]
+    (merge to-unic-map extra-entries-map)))
+
 (defn fill-charset-map
-  [{:keys [from-unic-map] :as m}]
-  (let [to-unic-map (set/map-invert from-unic-map)
-        from-unic-trie (fmt/make-trie from-unic-map)
+  [{:keys [from-unic-map to-unic-map] :as m}]
+  (let [from-unic-trie (fmt/make-trie from-unic-map)
         to-unic-trie (fmt/make-trie to-unic-map)
         from-unic (fn [s]
                   (->> (fmt/str->elems from-unic-trie s)
@@ -1141,10 +1219,17 @@
     {:to-unicode to-unic
      :from-unicode from-unic}))
 
-(def init-charsets {:tab {:from-unic-map tab-map}
-                    :bamini {:from-unic-map bamini-map}
-                    :tscii {:from-unic-map tscii-map}
-                    :webulagam {:from-unic-map webulagam-map}})
+(def init-charsets {:tab {:from-unic-map tab-map
+                          :to-unic-map (set/map-invert tab-map)}
+                    :bamini {:from-unic-map bamini-map
+                             :to-unic-map (-> (set/map-invert bamini-map)
+                                              fill-in-bamini-to-unic-map
+                                              (assoc ">" ",")
+                                              (assoc "xsp" "ஒளி"))}
+                    :tscii {:from-unic-map tscii-map
+                            :to-unic-map (set/map-invert tscii-map)}
+                    :webulagam {:from-unic-map webulagam-map
+                                :to-unic-map (set/map-invert webulagam-map)}})
 
 (defn mmap-vals
   "given a map and a fn, map the fn over the maps vals keeping keys same"
