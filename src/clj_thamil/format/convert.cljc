@@ -1225,7 +1225,9 @@
                              :to-unic-map (-> (set/map-invert bamini-map)
                                               fill-in-bamini-to-unic-map
                                               (assoc ">" ",")
-                                              (assoc "xsp" "ஒளி"))}
+                                              (assoc "xsp" "ஒளி")
+                                              (assoc "R+" "சூ")
+                                              (assoc "@" ";"))}
                     :tscii {:from-unic-map tscii-map
                             :to-unic-map (set/map-invert tscii-map)}
                     :webulagam {:from-unic-map webulagam-map
